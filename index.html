@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Idiomas - Mundo Autodidata</title>
+    <title>App Grupo Boticario</title>
 
     <link rel="manifest" href="manifest.json">
     
@@ -155,6 +155,13 @@
         tr.current-level-row td { border-top: 2px solid #f1c40f; border-bottom: 2px solid #f1c40f; font-weight: bold;}
         .table-title { display: block; margin-bottom: 10px; font-weight: bold; color: #34495e; font-size: 0.95rem; }
 
+        /* SOBRE */
+        .about-text-area { width: 100%; height: 150px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: 'Segoe UI', sans-serif; margin-bottom: 20px; resize: vertical; background: #fafafa; }
+        .about-centered { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px dashed #eee; }
+        .about-img { max-width: 200px; height: auto; margin: 20px auto; display: block; }
+        .about-txt-top { font-size: 1.1rem; color: #2c3e50; font-weight: bold; margin-bottom: 10px; }
+        .about-txt-bottom { font-size: 1rem; color: #7f8c8d; margin-top: 10px; }
+
         /* Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
@@ -187,8 +194,8 @@
     <div class="container">
         <div class="sidebar">
             <div class="logo-area">
-                <img src="logo.png" alt="Mundo Autodidata">
-                <span style="display:block; margin-top:5px; font-weight:bold; color:#555;">Mundo Autodidata</span>
+                <img src="logo.png" alt="x">
+                <span style="display:block; margin-top:5px; font-weight:bold; color:#555;">Grupo Boticário</span>
             </div>
             <div class="nav-menu">
                 <button class="nav-btn active" onclick="switchTab('timer')">⏱️ Cronômetro</button>
@@ -197,6 +204,7 @@
                 <button class="nav-btn" onclick="switchTab('cycles')">🔄 Ciclos de Estudo</button>
                 <button class="nav-btn" onclick="switchTab('stats')">📊 Dashboard</button>
                 <button class="nav-btn" onclick="switchTab('config')">⚙️ Configurações</button>
+                <button class="nav-btn" onclick="switchTab('about')">ℹ️ Sobre</button>
             </div>
         </div>
 
@@ -411,6 +419,30 @@
                 </div>
             </div>
 
+            <div id="tab-about" class="tab-content">
+                <h2>Sobre o Aplicativo</h2>
+                
+                <div class="config-section">
+                    <h3>Instruções para Colaboradores</h3>
+                    <p style="margin-bottom:5px; color:#777;">Utilize este campo para deixar notas sobre atualizações ou regras de uso:</p>
+                    <textarea class="about-text-area">
+Versão 1.0 - Lançamento Inicial
+- Funcionalidades de Cronômetro e Registro Manual ativas.
+- Sistema de Flashcards com meta diária.
+- Gestão de Ciclos de 12 semanas.
+- Dashboard completo.
+                    </textarea>
+                </div>
+
+                <div class="about-centered">
+                    <div class="about-txt-top">Plataforma de Desenvolvimento Contínuo</div>
+                    
+                    <img src="logo.png" alt="Logo Central" class="about-img">
+                    
+                    <div class="about-txt-bottom">© 2025 Grupo Boticário - Todos os direitos reservados.</div>
+                </div>
+            </div>
+
         </div> 
     </div> 
     
@@ -443,7 +475,7 @@
             "Escutar/Falar": ["escutar", "falar"],
             "Escrever com Tradutor": ["escrever"],
             "Conversar": ["escutar", "falar"],
-            "Escrever sem Tradutor": ["escrever"], // Corrigido a string para bater com o option
+            "Escrever sem Tradutor": ["escrever"], 
             "Ensinar": ["falar"]
         };
 
@@ -862,7 +894,7 @@
             document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
             document.getElementById('tab-' + t).classList.add('active');
             
-            const btnIndexMap = {'timer':0, 'manual':1, 'srs':2, 'cycles':3, 'stats':4, 'config':5};
+            const btnIndexMap = {'timer':0, 'manual':1, 'srs':2, 'cycles':3, 'stats':4, 'config':5, 'about':6};
             const btns = document.querySelectorAll('.nav-btn');
             if(btns[btnIndexMap[t]]) btns[btnIndexMap[t]].classList.add('active');
 
@@ -875,4 +907,3 @@
     </script>
 </body>
 </html>
-
