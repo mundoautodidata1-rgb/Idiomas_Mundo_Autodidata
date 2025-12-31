@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <title>Idiomas - Mundo Autodidata</title>
+
+    <link rel="manifest" href="manifest.json">
+    
+    <meta name="theme-color" content="#27ae60">
+    
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Estudos GB">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* --- ESTILOS GERAIS --- */
+        body {font-family: 'Segoe UI', sans-serif; background-color: #eef2f5; margin: 0; padding: 0; min-height: 100vh;}
+
+        .container { 
+            background-color: white; 
+            border-radius: 15px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            width: 100%; 
+            max-width: 1400px; 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: row;
+            margin: 0 auto;
+        }
+        
+        /* SIDEBAR */
+        .sidebar { width: 240px; background-color: #fff; border-right: 1px solid #eee; display: flex; flex-direction: column; flex-shrink: 0; z-index: 2; }
+        .logo-area { padding: 25px 20px; text-align: center; border-bottom: 1px solid #f0f0f0; background: #fff; }
+        .logo-area img { max-width: 140px; height: auto; display: block; margin: 0 auto; }
+        .nav-menu { flex: 1; padding-top: 20px; overflow-y: auto; }
+        .nav-btn { display: block; width: 100%; padding: 15px 25px; border: none; background: transparent; cursor: pointer; font-weight: 600; color: #7f8c8d; text-align: left; transition: 0.2s; font-size: 0.95rem; border-left: 4px solid transparent; outline: none; white-space: nowrap; }
+        .nav-btn:hover { background-color: #f8f9fa; color: #27ae60; }
+        .nav-btn.active { background-color: #f0fdf4; color: #27ae60; border-left: 4px solid #27ae60; }
+
+        /* CONTEÚDO */
+        .main-content { flex: 1; padding: 0; overflow-y: auto; background-color: #fff; position: relative; }
+        .tab-content { padding: 2rem 3rem; display: none; animation: fadeIn 0.3s ease-in-out; max-width: 100%; box-sizing: border-box; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { text-align: left; color: #2c3e50; margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        h3 { font-size: 1rem; color: #555; text-align: left; margin-bottom: 15px; margin-top: 20px; font-weight: 600; }
+
+        /* Componentes UI */
+        .status-bar { background: #ecf0f1; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #bdc3c7; color: #7f8c8d; font-weight: bold; font-size: 0.9rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 5px;}
+        .status-bar.success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .status-val { color: #2c3e50; font-size: 1.1rem; }
+
+        label { font-size: 0.85rem; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
+        select, input[type="date"], input[type="number"], input[type="text"] { padding: 10px; border-radius: 6px; border: 1px solid #ddd; width: 100%; margin-bottom: 1rem; font-size: 0.95rem; box-sizing: border-box; background: #fafafa; }
+        select:focus, input:focus { outline: none; border-color: #27ae60; background: white; }
+        
+        .timer-display { font-size: 4rem; font-weight: bold; color: #2c3e50; margin: 2rem 0; text-align: center; font-variant-numeric: tabular-nums; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 2rem; }
+        button.ctrl-btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; color: white; transition: 0.2s; font-size: 1rem;}
+        .btn-start { background-color: #27ae60; } .btn-start:hover { background-color: #219150; }
+        .btn-pause { background-color: #f39c12; }
+        .btn-stop { background-color: #c0392b; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .manual-form { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
+        .time-row { display: flex; gap: 15px; }
+        .time-group { flex: 1; }
+        .btn-save { width: 100%; background-color: #3498db; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.2s; }
+        .btn-save:hover { background-color: #2980b9; }
+        .btn-cancel { width: 100%; background-color: #95a5a6; color: white; padding: 8px; border: none; display: none; margin-top: 10px; border-radius: 6px; cursor: pointer; }
+
+        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-item { background: #fff; border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; transition: 0.2s; }
+        .history-item:hover { background: #fcfcfc; }
+        .history-info { display: flex; flex-direction: column; }
+        .history-date { font-size: 0.75rem; color: #888; margin-top: 2px;}
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0 5px; opacity: 0.6; transition: 0.2s; }
+        .action-btn:hover { opacity: 1; }
+
+        /* DASHBOARD */
+        .filter-section { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
+        .senses-grid { display: flex; justify-content: space-between; margin-bottom: 30px; gap: 15px; flex-wrap: wrap; }
+        .sense-card { flex: 1; min-width: 140px; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); transition: transform 0.2s; }
+        .sense-card:hover { transform: translateY(-3px); border-color: #27ae60; }
+        .sense-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+        .sense-label { font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; display: block; }
+        .sense-time { font-size: 1.2rem; font-weight: bold; color: #2c3e50; margin-top: 5px; display: block; line-height: 1.2;}
+        .chart-wrapper { margin-bottom: 30px; position: relative; height: 300px; width: 100%; min-width: 250px; }
+        .charts-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .charts-container .chart-wrapper { flex: 1; }
+
+        /* CICLOS */
+        .cycle-active-card { background: #e8f8f5; border: 2px solid #2ecc71; border-radius: 10px; padding: 25px; margin-bottom: 25px; }
+        .cycle-empty-state { text-align: center; padding: 50px 20px; background: #f9f9f9; border-radius: 10px; border: 2px dashed #ddd; color: #777;}
+        .cycle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .cycle-dates { font-size: 0.9rem; color: #555; background: white; padding: 5px 15px; border-radius: 20px; border: 1px solid #ddd; }
+        
+        .cycle-countdown { display: flex; gap: 15px; justify-content: center; margin: 25px 0; flex-wrap: wrap; }
+        .count-box { text-align: center; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); flex: 1; min-width: 100px; }
+        .count-num { display: block; font-size: 1.5rem; font-weight: bold; color: #27ae60; }
+        .count-lbl { font-size: 0.7rem; color: #777; text-transform: uppercase; font-weight: bold; margin-top: 5px;}
+        
+        .cycle-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; flex-wrap: wrap;}
+        .btn-cycle-start { background: #27ae60; color: white; padding: 15px 30px; font-size: 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;}
+        .btn-cycle-start:hover { transform: scale(1.02); }
+        .cycles-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 20px; min-width: 500px; }
+        .cycles-table th { background: #34495e; color: white; padding: 12px; text-align: center; border-radius: 4px 4px 0 0;}
+        .cycles-table td { border-bottom: 1px solid #eee; padding: 10px; text-align: center; vertical-align: middle; }
+        .progress-cell { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; }
+        .progress-val { font-weight: bold; color: #2c3e50; font-size: 0.9rem;}
+        .progress-meta { color: #95a5a6; font-size: 0.7rem; }
+
+        /* FLASHCARDS */
+        .flash-container { display: flex; gap: 20px; flex-direction: column; }
+        .card-stats-row { display: flex; gap: 10px; margin-bottom: 20px; background: #fffde7; padding: 15px; border: 1px solid #f1c40f; border-radius: 8px; flex-wrap: wrap; }
+        .c-stat-box { flex: 1; text-align: center; min-width: 100px; }
+        .c-stat-val { font-weight: bold; font-size: 1.2rem; color: #2c3e50; display: block; }
+        .c-stat-lbl { font-size: 0.75rem; color: #7f8c8d; text-transform: uppercase; }
+        .flash-study { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 30px; text-align: center; min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative;}
+        .flash-manage { background: #f8f9fa; border-radius: 10px; padding: 20px; max-height: 450px; overflow-y: auto; border: 1px solid #eee;}
+        .card-face { font-size: 1.8rem; color: #2c3e50; margin-bottom: 25px; font-weight: bold; word-wrap: break-word; max-width: 100%;}
+        .card-back { font-size: 1.4rem; color: #27ae60; margin-bottom: 30px; display: none; }
+        .card-back.visible { display: block; animation: flipIn 0.3s ease-in; }
+        @keyframes flipIn { from { transform: rotateX(90deg); opacity: 0; } to { transform: rotateX(0); opacity: 1; } }
+        .srs-controls { display: none; gap: 15px; width: 100%; justify-content: center; max-width: 400px; }
+        .srs-controls.visible { display: flex; }
+        .btn-srs-show { background: #3498db; color: white; padding: 12px 40px; border: none; border-radius: 30px; cursor: pointer; font-size: 1rem; font-weight: bold; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); }
+        .btn-srs-fail { background: #e74c3c; color: white; flex:1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-srs-pass { background: #27ae60; color: white; flex:1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .srs-stats { position: absolute; top: 15px; right: 15px; font-size: 0.85rem; color: #999; background: #f0f0f0; padding: 4px 8px; border-radius: 10px;}
+        .word-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; background: white; min-width: 400px;}
+        .word-table th { background: #ecf0f1; padding: 8px; text-align: left; color: #555;}
+        .word-table td { border-bottom: 1px solid #eee; padding: 8px; }
+
+        /* CONFIG */
+        .config-section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 30px; }
+        .week-selector { display: flex; gap: 10px; justify-content: left; margin: 15px 0; flex-wrap: wrap;}
+        .day-circle { width: 40px; height: 40px; border-radius: 50%; background: #eee; color: #777; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.3s; user-select: none; font-size: 0.8rem; border: 2px solid transparent; }
+        .day-circle.selected { background: #27ae60; color: white; border-color: #2ecc71; box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4); }
+        .level-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; margin-bottom: 15px; min-width: 500px;}
+        .level-table th { background: #f8f9fa; padding: 10px; text-align: center; color: #555; font-weight: 600; border-bottom: 2px solid #eee;}
+        .level-table td { padding: 8px; border-bottom: 1px solid #eee; text-align: center; }
+        .level-table input { width: 100%; text-align: center; margin: 0; padding: 6px; border: 1px solid #ddd; border-radius: 4px; background: transparent;}
+        .level-badge { font-weight: bold; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; display: inline-block; width: 25px; text-align: center;}
+        .lvl-c2 { background-color: #2c3e50; } .lvl-c1 { background-color: #34495e; }
+        .lvl-b2 { background-color: #e67e22; } .lvl-b1 { background-color: #f39c12; }
+        .lvl-a2 { background-color: #27ae60; } .lvl-a1 { background-color: #2ecc71; }
+        tr.current-level-row { background-color: #fffde7; }
+        tr.current-level-row td { border-top: 2px solid #f1c40f; border-bottom: 2px solid #f1c40f; font-weight: bold;}
+        .table-title { display: block; margin-bottom: 10px; font-weight: bold; color: #34495e; font-size: 0.95rem; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bbb; }
+
+        /* Media Queries */
+        @media (max-width: 850px) {
+            body { padding: 0; }
+            .container { flex-direction: column; height: 100vh; border-radius: 0; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #eee; flex-direction: row; align-items: center; padding: 5px 0; }
+            .logo-area { padding: 10px; border-bottom: none; flex-shrink: 0; }
+            .logo-area img { max-height: 40px; width: auto; }
+            .nav-menu { display: flex; overflow-x: auto; padding: 0; align-items: center; }
+            .nav-btn { padding: 15px; border-left: none; border-bottom: 3px solid transparent; width: auto; white-space: nowrap; }
+            .nav-btn.active { border-left: none; border-bottom: 3px solid #27ae60; background: transparent; }
+            .tab-content { padding: 1.5rem 1rem; padding-bottom: 80px; }
+            .config-section > div { flex-direction: column; }
+            .timer-display { font-size: 3rem; }
+        }
+        @media (max-width: 480px) {
+            .count-box { min-width: 45%; padding: 10px; }
+            .sense-card { min-width: 100%; }
+            .charts-container { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo-area">
+                <img src="logo.png" alt="x">
+                <span style="display:block; margin-top:5px; font-weight:bold; color:#555;">Mundo Autodidata</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-btn active" onclick="switchTab('timer')">⏱️ Cronômetro</button>
+                <button class="nav-btn" onclick="switchTab('manual')">📝 Inserir Manual</button>
+                <button class="nav-btn" onclick="switchTab('srs')">🧠 Flashcards</button>
+                <button class="nav-btn" onclick="switchTab('cycles')">🔄 Ciclos de Estudo</button>
+                <button class="nav-btn" onclick="switchTab('stats')">📊 Dashboard</button>
+                <button class="nav-btn" onclick="switchTab('config')">⚙️ Configurações</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            
+            <div id="tab-timer" class="tab-content active">
+                <h2>Estudo Agora</h2>
+                <div id="daily-status-timer" class="status-bar"><span>Carregando...</span></div>
+                <div style="max-width: 600px; margin: 0 auto;">
+                    <label>O que vamos praticar?</label>
+                    <select id="timerActivity">
+                        <option value="Ler">1-Ler</option>
+                        <option value="Ler/Escutar">2-Ler & Escutar</option>
+                        <option value="Ler/Falar">3-Ler & Falar</option>
+                        <option value="Escutar">4-Escutar</option>
+                        <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
+                        <option value="Escutar/Falar">6-Escutar & Falar</option>
+                        <option value="Escrever">7-Escrever com Tradutor</option>
+                        <option value="Conversar">8-Conversar</option>
+                        <option value="Escrever">9-Escrever sem Tradutor</option>
+                        <option value="Ensinar">10-Ensinar</option>
+                    </select>
+                    <div class="timer-display" id="timer">00:00:00</div>
+                    <div class="btn-group">
+                        <button class="ctrl-btn btn-start" onclick="startTimer()" id="btnStart">Iniciar</button>
+                        <button class="ctrl-btn btn-pause" onclick="pauseTimer()" id="btnPause" disabled>Pausar</button>
+                        <button class="ctrl-btn btn-stop" onclick="stopTimer()" id="btnStop" disabled>Parar & Salvar</button>
+                    </div>
+                </div>
+                <h3 style="border-top: 1px solid #eee; padding-top: 15px;">Realizado Hoje</h3>
+                <ul class="history-list" id="timer-list"></ul>
+            </div>
+
+            <div id="tab-manual" class="tab-content">
+                <h2>Inserir / Editar Registro</h2>
+                <div id="daily-status-manual" class="status-bar"><span>Selecione uma data</span></div>
+                <div class="manual-form">
+                    <label>Data da Atividade:</label>
+                    <input type="date" id="manualDate">
+                    <label>Tipo de Atividade:</label>
+                    <select id="manualActivity">
+                        <option value="Ler">1-Ler</option>
+                        <option value="Ler/Escutar">2-Ler & Escutar</option>
+                        <option value="Ler/Falar">3-Ler & Falar</option>
+                        <option value="Escutar">4-Escutar</option>
+                        <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
+                        <option value="Escutar/Falar">6-Escutar & Falar</option>
+                        <option value="Escrever">7-Escrever com Tradutor</option>
+                        <option value="Conversar">8-Conversar</option>
+                        <option value="Escrever">9-Escrever sem Tradutor</option>
+                        <option value="Ensinar">10-Ensinar</option>
+                    </select>
+                    <div class="time-row">
+                        <div class="time-group"><label>Horas:</label><input type="number" id="manualHours" min="0" value="0"></div>
+                        <div class="time-group"><label>Minutos:</label><input type="number" id="manualMinutes" min="0" max="59" value="0"></div>
+                    </div>
+                    <button class="btn-save" onclick="handleManualSave()" id="btnManualSave">Adicionar Registro</button>
+                    <button class="btn-cancel" onclick="cancelEdit()" id="btnCancelEdit">Cancelar Edição</button>
+                </div>
+                <h3>Histórico da Data Selecionada</h3>
+                <ul class="history-list" id="manual-list"></ul>
+            </div>
+
+            <div id="tab-srs" class="tab-content">
+                <h2>Memorização Espaçada (Flashcards)</h2>
+                
+                <div class="flash-container">
+                    <div class="flash-study" id="study-area">
+                        <div class="srs-stats" id="srs-count">Pendentes: 0</div>
+                        <div id="card-content">
+                            <div class="card-face" id="card-front">Sem cartões para hoje!</div>
+                            <div class="card-back" id="card-back">Adicione novos ou volte amanhã.</div>
+                        </div>
+                        <button class="btn-srs-show" id="btn-show-answer" onclick="showAnswer()" style="display:none;">Ver Resposta</button>
+                        <div class="srs-controls" id="srs-controls">
+                            <button class="btn-srs-fail" onclick="rateCard(false)">Errei (Reset)</button>
+                            <button class="btn-srs-pass" onclick="rateCard(true)">Acertei (Next)</button>
+                        </div>
+                    </div>
+
+                    <div class="flash-manage">
+                        <div id="card-goal-stats" class="card-stats-row" style="display:none;">
+                            <div class="c-stat-box"><span class="c-stat-val" id="cg-today">0</span><span class="c-stat-lbl">Pend. Hoje</span></div>
+                            <div class="c-stat-box"><span class="c-stat-val" id="cg-pending-total">0</span><span class="c-stat-lbl">Pend. Totais</span></div>
+                            <div class="c-stat-box"><span class="c-stat-val" id="cg-added-cycle" style="color:#27ae60">0</span><span class="c-stat-lbl">Add. no Ciclo</span></div>
+                            <div class="c-stat-box"><span class="c-stat-val" id="cg-cycle-total">0</span><span class="c-stat-lbl">Meta Ciclo</span></div>
+                            <div class="c-stat-box"><span class="c-stat-val" id="cg-percent">0%</span><span class="c-stat-lbl">Progresso</span></div>
+                        </div>
+
+                        <h3>Adicionar Novo Card</h3>
+                        <div style="display:flex; gap:10px; margin-bottom:10px;">
+                            <input type="text" id="newFront" placeholder="Palavra / Frase (Frente)" style="margin:0;">
+                            <input type="text" id="newBack" placeholder="Tradução / Significado (Verso)" style="margin:0;">
+                        </div>
+                        <button class="btn-save" onclick="addFlashcard()" style="padding: 8px;">Salvar Cartão</button>
+                        
+                        <h3 style="margin-top:20px;">Banco de Palavras</h3>
+                        <input type="text" id="searchFlashcard" placeholder="🔍 Pesquisar cartão..." oninput="renderCardList()" style="margin-bottom:10px;">
+                        
+                        <div style="overflow-y:auto;">
+                            <table class="word-table">
+                                <thead><tr><th>Frente</th><th>Verso</th><th>Nível</th><th>Ação</th></tr></thead>
+                                <tbody id="flashcards-list"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-cycles" class="tab-content">
+                <h2>Gestão de Ciclos</h2>
+                <div id="cycle-active-area"></div>
+                <h3>Histórico de Ciclos</h3>
+                <div style="overflow-x:auto;">
+                    <table class="cycles-table">
+                        <thead><tr><th>Período</th><th>Nível</th><th>Ler</th><th>Escutar</th><th>Falar</th><th>Escrever</th><th>Status</th></tr></thead>
+                        <tbody id="cyclesTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="tab-stats" class="tab-content">
+                <h2>Dashboard Geral</h2>
+                <div class="filter-section">
+                    <label>Filtrar Período:</label>
+                    <select id="filterRange" onchange="toggleCustomDate()">
+                        <option value="all">Todo o Histórico</option>
+                        <option value="week">Semana Atual</option>
+                        <option value="today">Hoje</option>
+                        <option value="yesterday">Ontem</option>
+                        <option value="custom">Escolher Datas...</option>
+                    </select>
+                    <div id="customDates" class="date-inputs" style="display:none; gap:10px; margin-top:10px;">
+                        <input type="date" id="dateStart" style="display:inline-block; width:48%">
+                        <input type="date" id="dateEnd" style="display:inline-block; width:48%">
+                    </div>
+                    <button onclick="applyFilter()" style="width:100%; background:#3498db; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer; margin-top:10px; font-weight:bold;">Aplicar Filtro</button>
+                </div>
+
+                <div class="senses-grid">
+                    <div class="sense-card"><span class="sense-icon">📖</span><span class="sense-label">Ler</span><span class="sense-time" id="time-ler">00h 00m</span></div>
+                    <div class="sense-card"><span class="sense-icon">🎧</span><span class="sense-label">Escutar</span><span class="sense-time" id="time-escutar">00h 00m</span></div>
+                    <div class="sense-card"><span class="sense-icon">🗣️</span><span class="sense-label">Falar</span><span class="sense-time" id="time-falar">00h 00m</span></div>
+                    <div class="sense-card"><span class="sense-icon">✍️</span><span class="sense-label">Escrever</span><span class="sense-time" id="time-escrever">00h 00m</span></div>
+                </div>
+                
+                <div class="charts-container">
+                    <div class="chart-wrapper"><h3>Radar de Habilidades</h3><canvas id="radarChart"></canvas></div>
+                    <div class="chart-wrapper"><h3>Ranking de Atividades</h3><canvas id="barActivityChart"></canvas></div>
+                </div>
+            </div>
+
+            <div id="tab-config" class="tab-content">
+                <h2>Planejamento & Níveis</h2>
+                <div class="config-section">
+                    <div style="display: flex; gap: 20px;">
+                        <div style="flex:1">
+                            <label>Meta Diária (Horas):</label>
+                            <input type="number" id="dailyGoal" placeholder="Ex: 1" step="0.5" onchange="saveConfigAndRecalc()">
+                        </div>
+                        <div style="flex:1">
+                            <label>Meu Nível Atual:</label>
+                            <select id="currentLevel" onchange="saveConfigAndRecalc()">
+                                <option value="A1">A1 - Iniciante</option>
+                                <option value="A2">A2 - Básico</option>
+                                <option value="B1">B1 - Intermediário</option>
+                                <option value="B2">B2 - Independente</option>
+                                <option value="C1">C1 - Avançado</option>
+                                <option value="C2">C2 - Proficiente</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; background: #fffde7; padding: 10px; border-radius: 8px; border: 1px solid #eee;">
+                        <label style="display: flex; align-items: center; cursor: pointer; gap: 10px;">
+                            <input type="checkbox" id="checkCardGoal" onchange="toggleCardGoalInput()"> 
+                            Definir Meta de Palavras/Frases por Dia
+                        </label>
+                        <div id="divCardGoalInput" style="display:none; margin-top: 10px;">
+                            <label>Quantidade por Dia:</label>
+                            <input type="number" id="inputCardGoal" placeholder="Ex: 5" style="width: 100px;" onchange="saveConfigAndRecalc()">
+                        </div>
+                    </div>
+
+                    <label style="margin-top:15px;">Dias de Estudo:</label>
+                    <div class="week-selector">
+                        <div class="day-circle" onclick="toggleDay(this, 0)">Dom</div>
+                        <div class="day-circle" onclick="toggleDay(this, 1)">Seg</div>
+                        <div class="day-circle" onclick="toggleDay(this, 2)">Ter</div>
+                        <div class="day-circle" onclick="toggleDay(this, 3)">Qua</div>
+                        <div class="day-circle" onclick="toggleDay(this, 4)">Qui</div>
+                        <div class="day-circle" onclick="toggleDay(this, 5)">Sex</div>
+                        <div class="day-circle" onclick="toggleDay(this, 6)">Sáb</div>
+                    </div>
+                </div>
+
+                <div class="config-section" style="border:none;">
+                    <span class="table-title">Distribuição Percentual (%)</span>
+                    <div style="overflow-x:auto">
+                        <table class="level-table">
+                            <thead><tr><th>Nível</th><th>Ler</th><th>Escutar</th><th>Falar</th><th>Escrever</th><th>Total</th></tr></thead>
+                            <tbody id="levelTableBody"></tbody>
+                        </table>
+                    </div>
+                    <span class="table-title" style="margin-top:30px; color:#27ae60;">Planejamento em Horas (Ciclo 12 Semanas)</span>
+                    <div style="overflow-x:auto">
+                        <table class="level-table">
+                            <thead><tr><th>Nível</th><th>Ler</th><th>Escutar</th><th>Falar</th><th>Escrever</th></tr></thead>
+                            <tbody id="hoursTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div> 
+    </div> 
+    
+    <script>
+        // --- REGISTRO DO SERVICE WORKER (PWA) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registrado!', reg))
+                    .catch(err => console.log('Falha ao registrar Service Worker:', err));
+            });
+        }
+
+        // --- 1. DADOS ---
+        let studyData = [], cyclesData = [], flashcards = [];
+        let configData = {
+            goal: 1.0, days: [1,2,3,4,5], currentLevel: 'A1',
+            cardGoalEnabled: false, cardGoalQty: 0,
+            levels: { 'C2': [25,25,25,25], 'C1': [15,20,35,30], 'B2': [20,20,30,30], 'B1': [20,30,30,20], 'A2': [30,30,20,20], 'A1': [35,35,15,15] }
+        };
+        const levelsOrder = ['C2', 'C1', 'B2', 'B1', 'A2', 'A1'];
+        // --- ATUALIZAÇÃO DO MAPA DE SENTIDOS ---
+        const senseMap = {
+            "Ler": ["ler"],
+            "Escutar": ["escutar"],
+            "Escrever": ["escrever"],
+            "Ler/Escutar": ["ler", "escutar"],
+            "Ler/Escutar/Falar": ["ler", "escutar", "falar"],
+            "Ler/Falar": ["ler", "falar"],
+            "Escutar/Falar": ["escutar", "falar"],
+            "Escrever com Tradutor": ["escrever"],
+            "Conversar": ["escutar", "falar"],
+            "Escrever sem Tradutor": ["escrever"], // Corrigido a string para bater com o option
+            "Ensinar": ["falar"]
+        };
+
+        function loadData() {
+            if(localStorage.getItem('studyData_v11')) studyData = JSON.parse(localStorage.getItem('studyData_v11'));
+            if(localStorage.getItem('studyConfig_v11')) configData = JSON.parse(localStorage.getItem('studyConfig_v11'));
+            if(localStorage.getItem('cyclesData_v11')) cyclesData = JSON.parse(localStorage.getItem('cyclesData_v11'));
+            if(localStorage.getItem('flashcards_v11')) flashcards = JSON.parse(localStorage.getItem('flashcards_v11'));
+            initConfigUI();
+        }
+        function saveAll() {
+            localStorage.setItem('studyData_v11', JSON.stringify(studyData));
+            localStorage.setItem('studyConfig_v11', JSON.stringify(configData));
+            localStorage.setItem('cyclesData_v11', JSON.stringify(cyclesData));
+            localStorage.setItem('flashcards_v11', JSON.stringify(flashcards));
+        }
+
+        // --- 2. UTILITÁRIOS ---
+        function getRawDateStr(d) { return d.toISOString().split('T')[0]; }
+        function formatDateBR(raw) { if(!raw) return ''; const parts = raw.split('-'); return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`; }
+        function formatTimeInfo(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=Math.floor(s%60); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`; }
+        function formatHM(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return `${h}h ${m}m`; }
+
+        // --- 3. STATUS DIÁRIO ---
+        function updateDailyStats(dateStr = null) {
+            const targetDate = dateStr || getRawDateStr(new Date());
+            const total = studyData.filter(d => d.rawDate === targetDate).reduce((a,c) => a+c.duration, 0);
+            const goal = configData.goal * 3600; 
+            const rem = Math.max(0, goal - total);
+            const displayDate = targetDate.split('-').reverse().join('/');
+            
+            let html = '', cls = '';
+            if (total >= goal && goal > 0) {
+                html = `<div>✅ Meta de ${displayDate} batida! (${formatTimeInfo(total)})</div>`;
+                cls = 'success';
+            } else {
+                html = `<div>Em ${displayDate}: <span class="status-val">${formatTimeInfo(total)}</span></div>
+                        <div>Falta: <span class="status-val">${formatTimeInfo(rem)}</span></div>`;
+            }
+
+            if(!dateStr) {
+                const elTimer = document.getElementById('daily-status-timer');
+                elTimer.innerHTML = html; elTimer.className = 'status-bar ' + cls;
+            } else {
+                const elManual = document.getElementById('daily-status-manual');
+                elManual.innerHTML = html; elManual.className = 'status-bar ' + cls;
+            }
+        }
+
+        // --- 4. FLASHCARDS (SRS) ---
+        let studyQueue = [];
+        let currentCard = null;
+
+        function renderFlashcardsTab() {
+            renderCardList();
+            prepareStudySession();
+            updateCardGoalStats();
+        }
+
+        function addFlashcard() {
+            const f = document.getElementById('newFront').value;
+            const b = document.getElementById('newBack').value;
+            if(!f || !b) return alert("Preencha frente e verso");
+            
+            flashcards.push({
+                id: Date.now(), front: f, back: b,
+                level: 0, nextReview: getRawDateStr(new Date())
+            });
+            
+            document.getElementById('newFront').value = '';
+            document.getElementById('newBack').value = '';
+            saveAll();
+            renderCardList();
+            prepareStudySession();
+            updateCardGoalStats();
+        }
+
+        function deleteFlashcard(id) {
+            if(confirm("Deletar cartão?")) {
+                flashcards = flashcards.filter(c => c.id !== id);
+                saveAll();
+                renderFlashcardsTab();
+            }
+        }
+
+        function renderCardList() {
+            const tbody = document.getElementById('flashcards-list');
+            const searchTerm = document.getElementById('searchFlashcard') ? document.getElementById('searchFlashcard').value.toLowerCase() : '';
+            tbody.innerHTML = '';
+            const filteredCards = flashcards.filter(c => 
+                c.front.toLowerCase().includes(searchTerm) || 
+                c.back.toLowerCase().includes(searchTerm)
+            );
+            filteredCards.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td>${c.front}</td><td>${c.back}</td><td>${c.level}</td>
+                        <td><button onclick="deleteFlashcard(${c.id})" style="color:red;border:none;background:none;cursor:pointer;">❌</button></td>
+                    </tr>`;
+            });
+        }
+
+        function prepareStudySession() {
+            const today = getRawDateStr(new Date());
+            studyQueue = flashcards.filter(c => c.nextReview <= today);
+            document.getElementById('srs-count').textContent = `Pendentes: ${studyQueue.length}`;
+            if(studyQueue.length > 0) {
+                currentCard = studyQueue[0];
+                showCardFace();
+            } else {
+                currentCard = null;
+                document.getElementById('card-front').textContent = "Tudo em dia! 🎉";
+                document.getElementById('card-back').classList.remove('visible');
+                document.getElementById('btn-show-answer').style.display = 'none';
+                document.getElementById('srs-controls').classList.remove('visible');
+            }
+        }
+
+        function showCardFace() {
+            document.getElementById('card-front').textContent = currentCard.front;
+            document.getElementById('card-back').textContent = currentCard.back;
+            document.getElementById('card-back').classList.remove('visible');
+            document.getElementById('btn-show-answer').style.display = 'inline-block';
+            document.getElementById('srs-controls').classList.remove('visible');
+        }
+
+        function showAnswer() {
+            document.getElementById('card-back').classList.add('visible');
+            document.getElementById('btn-show-answer').style.display = 'none';
+            document.getElementById('srs-controls').classList.add('visible');
+        }
+
+        function rateCard(success) {
+            const intervals = [1, 3, 7, 14, 30, 60, 90];
+            if(success) {
+                currentCard.level++;
+                const daysToAdd = intervals[Math.min(currentCard.level, intervals.length)-1] || 90;
+                const nextDate = new Date();
+                nextDate.setDate(nextDate.getDate() + daysToAdd);
+                currentCard.nextReview = getRawDateStr(nextDate);
+            } else {
+                currentCard.level = 0;
+                const nextDate = new Date();
+                nextDate.setDate(nextDate.getDate() + 1);
+                currentCard.nextReview = getRawDateStr(nextDate);
+            }
+            const idx = flashcards.findIndex(c => c.id === currentCard.id);
+            flashcards[idx] = currentCard;
+            saveAll();
+            prepareStudySession();
+        }
+
+        function updateCardGoalStats() {
+            const statsDiv = document.getElementById('card-goal-stats');
+            if(!configData.cardGoalEnabled) { statsDiv.style.display = 'none'; return; }
+            
+            const activeCycle = getActiveCycle();
+            if(!activeCycle) { statsDiv.style.display = 'none'; return; }
+
+            statsDiv.style.display = 'flex';
+            const dailyGoal = parseInt(configData.cardGoalQty) || 0;
+            const studyDaysCount = activeCycle.studyDays.length;
+            const cycleWeeks = 12;
+            const totalCycleGoal = dailyGoal * studyDaysCount * cycleWeeks;
+
+            const startDate = new Date(activeCycle.startDate + 'T00:00:00');
+            const endDate = new Date(activeCycle.endDate + 'T23:59:59');
+            const addedInCycle = flashcards.filter(c => c.id >= startDate.getTime() && c.id <= endDate.getTime()).length;
+
+            const todayStr = getRawDateStr(new Date());
+            const addedToday = flashcards.filter(c => getRawDateStr(new Date(c.id)) === todayStr).length;
+            const pendingToday = Math.max(0, dailyGoal - addedToday);
+
+            let expectedTotalToDate = 0;
+            let loopDate = new Date(startDate);
+            const now = new Date();
+            const cutoffDate = now > endDate ? endDate : now;
+
+            while(loopDate <= cutoffDate) {
+                if(activeCycle.studyDays.includes(loopDate.getDay())) { expectedTotalToDate += dailyGoal; }
+                loopDate.setDate(loopDate.getDate() + 1);
+            }
+            
+            const pendingTotal = Math.max(0, expectedTotalToDate - addedInCycle);
+            const percent = totalCycleGoal > 0 ? ((addedInCycle / totalCycleGoal) * 100).toFixed(1) : 0;
+
+            document.getElementById('cg-today').textContent = pendingToday;
+            document.getElementById('cg-pending-total').textContent = pendingTotal;
+            document.getElementById('cg-added-cycle').textContent = addedInCycle;
+            document.getElementById('cg-cycle-total').textContent = totalCycleGoal;
+            document.getElementById('cg-percent').textContent = percent + '%';
+        }
+
+        // --- 5. CICLOS ---
+        let cycleRadarChart = null;
+        function getActiveCycle() { return cyclesData.find(c => c.status === 'active'); }
+        function startCycle() {
+            if(getActiveCycle()) return alert("Já existe um ciclo ativo.");
+            const today = new Date();
+            const endDate = new Date(today); endDate.setDate(today.getDate() + (12 * 7));
+            const currentLvl = configData.currentLevel;
+            const pct = configData.levels[currentLvl];
+            const totalHours = configData.goal * configData.days.length * 12;
+            const targets = { ler: totalHours*(pct[0]/100), escutar: totalHours*(pct[1]/100), falar: totalHours*(pct[2]/100), escrever: totalHours*(pct[3]/100) };
+            
+            cyclesData.unshift({ id:Date.now(), startDate:getRawDateStr(today), endDate:getRawDateStr(endDate), level:currentLvl, targets:targets, studyDays:[...configData.days], status:'active' });
+            saveAll(); renderCyclesTab();
+        }
+        
+        function endCycle(id) { 
+            if(confirm("Finalizar o ciclo? A data de término será ajustada para hoje, impedindo novos registros neste ciclo.")) { 
+                const c = cyclesData.find(x => x.id === id); 
+                if(c) {
+                    c.status = 'completed'; 
+                    c.endDate = getRawDateStr(new Date()); 
+                    saveAll(); 
+                    renderCyclesTab(); 
+                }
+            } 
+        }
+        function deleteCycle(id) { if(confirm("Apagar?")){ cyclesData=cyclesData.filter(x=>x.id!==id); saveAll(); renderCyclesTab(); } }
+
+        function renderCyclesTab() {
+            const activeArea = document.getElementById('cycle-active-area');
+            const activeCycle = getActiveCycle();
+            if (!activeCycle) {
+                activeArea.innerHTML = `<div class="cycle-empty-state"><h3>Nenhum ciclo ativo</h3><button class="btn-cycle-start" onclick="startCycle()">🚀 Iniciar Novo Ciclo</button></div>`;
+            } else {
+                const today = new Date(); today.setHours(0,0,0,0);
+                const end = new Date(activeCycle.endDate + 'T00:00:00');
+                const diffTime = end - today;
+                const weeksRemaining = Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7);
+                
+                // CÁLCULO CORRIGIDO: DIAS DO CICLO (Não dias corridos)
+                const cycleWeeks = 12; 
+                const plannedDaysPerWeek = activeCycle.studyDays.length;
+                const totalPlannedDays = cycleWeeks * plannedDaysPerWeek; 
+
+                const cycleLogs = studyData.filter(d => d.rawDate >= activeCycle.startDate && d.rawDate <= activeCycle.endDate);
+                const uniqueDaysStudied = new Set(cycleLogs.map(d => d.rawDate)).size; 
+                
+                // Saldo restante
+                const daysRemaining = Math.max(0, totalPlannedDays - uniqueDaysStudied); 
+                
+                // Progresso
+                const progressPct = totalPlannedDays > 0 ? ((uniqueDaysStudied / totalPlannedDays) * 100).toFixed(1) : 0;
+
+                activeArea.innerHTML = `
+                    <div class="cycle-active-card">
+                        <div class="cycle-header"><div><span class="level-badge lvl-${activeCycle.level.toLowerCase()}">${activeCycle.level}</span> <b>Ciclo Ativo</b></div><div class="cycle-dates">${formatDateBR(activeCycle.startDate)} até ${formatDateBR(activeCycle.endDate)}</div></div>
+                        <div class="cycle-countdown">
+                            <div class="count-box"><span class="count-num">${Math.max(0, weeksRemaining)}</span><span class="count-lbl">Semanas Restantes</span></div>
+                            <div class="count-box"><span class="count-num">${uniqueDaysStudied}</span><span class="count-lbl">Dias Estudados</span></div>
+                            <div class="count-box"><span class="count-num">${daysRemaining}</span><span class="count-lbl">Dias Restantes</span></div>
+                            <div class="count-box"><span class="count-num">${progressPct}%</span><span class="count-lbl">Progresso</span></div>
+                        </div>
+                        <div class="chart-wrapper" style="height:300px;"><div style="text-align:right;"><label style="font-size:0.8rem;"><input type="checkbox" id="cycleMetaToggle" checked onchange="renderCycleRadar()"> Exibir Meta</label></div><canvas id="cycleRadarChart"></canvas></div>
+                        <div class="cycle-actions"><button class="btn-save" style="background:#e67e22; width:auto;" onclick="endCycle(${activeCycle.id})">🏁 Finalizar Ciclo</button><button class="btn-save" style="background:#c0392b; width:auto;" onclick="deleteCycle(${activeCycle.id})">❌</button></div>
+                    </div>`;
+                setTimeout(() => renderCycleRadar(activeCycle), 100);
+            }
+            const tbody = document.getElementById('cyclesTableBody'); tbody.innerHTML = '';
+            cyclesData.forEach(c => {
+                const s = getCycleStats(c);
+                const mk = (r,t) => `<div class="progress-cell"><span class="progress-val">${(r/3600).toFixed(1)}h</span><span class="progress-meta">/ ${t.toFixed(1)}h</span></div>`;
+                tbody.innerHTML += `<tr><td>${formatDateBR(c.startDate)}<br>à ${formatDateBR(c.endDate)}</td><td><span class="level-badge lvl-${c.level.toLowerCase()}">${c.level}</span></td><td>${mk(s.ler,c.targets.ler)}</td><td>${mk(s.escutar,c.targets.escutar)}</td><td>${mk(s.falar,c.targets.falar)}</td><td>${mk(s.escrever,c.targets.escrever)}</td><td style="color:${c.status==='active'?'green':'grey'}">${c.status}</td></tr>`;
+            });
+        }
+        function getCycleStats(c) {
+            const logs = studyData.filter(d => d.rawDate >= c.startDate && d.rawDate <= c.endDate);
+            let t = {ler:0, escutar:0, falar:0, escrever:0};
+            logs.forEach(i => (senseMap[i.activity]||[]).forEach(s=>t[s]+=i.duration));
+            return t;
+        }
+        function renderCycleRadar(c=getActiveCycle()) {
+            if(!c)return; const ctx=document.getElementById('cycleRadarChart'); if(!ctx)return;
+            const s=getCycleStats(c); const meta=document.getElementById('cycleMetaToggle').checked;
+            if(cycleRadarChart) cycleRadarChart.destroy();
+            cycleRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Ler','Escutar','Falar','Escrever'],
+                    datasets: [
+                        { label:'Real (h)', data:[s.ler/3600, s.escutar/3600, s.falar/3600, s.escrever/3600], backgroundColor:'rgba(39,174,96,0.2)', borderColor:'#27ae60', borderWidth:2 },
+                        ...(meta?[{ label:'Meta (h)', data:[c.targets.ler, c.targets.escutar, c.targets.falar, c.targets.escrever], backgroundColor:'rgba(231,76,60,0.1)', borderColor:'#e74c3c', borderWidth:1, borderDash:[5,5] }]:[])
+                    ]
+                }, options: { responsive:true, maintainAspectRatio:false }
+            });
+        }
+
+        // --- 6. CRONOMETRO & MANUAIS ---
+        let timerInterval, seconds = 0, isRunning = false, editingId = null;
+        const timerDisplay = document.getElementById('timer');
+        document.getElementById('manualDate').value = getRawDateStr(new Date());
+
+        function startTimer() { if(!isRunning){ isRunning=true; timerInterval=setInterval(()=>{seconds++;timerDisplay.textContent=formatTimeInfo(seconds)},1000); toggleCtrls(true); }}
+        function pauseTimer() { if(isRunning){ clearInterval(timerInterval); isRunning=false; toggleCtrls(false, true); }}
+        function stopTimer() { if(seconds===0)return; clearInterval(timerInterval); isRunning=false; saveStudy(document.getElementById('timerActivity').value, seconds, new Date()); seconds=0; timerDisplay.textContent="00:00:00"; toggleCtrls(false); renderLists(); }
+        function toggleCtrls(active, paused=false) {
+            document.getElementById('btnStart').disabled = active; document.getElementById('btnStart').textContent = paused?"Retomar":"Iniciar";
+            document.getElementById('btnPause').disabled = !active; document.getElementById('btnStop').disabled = !active; document.getElementById('timerActivity').disabled = active;
+        }
+        function saveStudy(act, dur, dateObj, id=null) {
+            const raw = getRawDateStr(dateObj);
+            const obj = { id: id||Date.now(), activity:act, duration:dur, rawDate:raw, displayDate:dateObj.toLocaleDateString('pt-BR') };
+            if(id) { const idx = studyData.findIndex(i=>i.id===id); if(idx!==-1) studyData[idx] = obj; }
+            else studyData.push(obj);
+            studyData.sort((a,b)=>b.id-a.id); saveAll();
+        }
+        function handleManualSave() {
+            const d = document.getElementById('manualDate').value; const act = document.getElementById('manualActivity').value;
+            const h = +document.getElementById('manualHours').value; const m = +document.getElementById('manualMinutes').value;
+            if(!d || (h===0 && m===0)) return alert("Dados inválidos");
+            saveStudy(act, (h*3600)+(m*60), new Date(d+'T00:00:00'), editingId); cancelEdit(); renderLists();
+        }
+        function editEntry(id) {
+            const item = studyData.find(d=>d.id===id); if(!item)return;
+            switchTab('manual'); document.getElementById('manualDate').value = item.rawDate; document.getElementById('manualActivity').value = item.activity;
+            document.getElementById('manualHours').value = Math.floor(item.duration/3600); document.getElementById('manualMinutes').value = Math.floor((item.duration%3600)/60);
+            editingId = id; document.getElementById('btnManualSave').textContent = "Salvar Alteração"; document.getElementById('btnManualSave').style.background = "#f39c12"; document.getElementById('btnCancelEdit').style.display = 'block';
+        }
+        function cancelEdit(){ editingId=null; document.getElementById('manualHours').value=0; document.getElementById('manualMinutes').value=0; document.getElementById('btnManualSave').textContent="Adicionar Registro"; document.getElementById('btnManualSave').style.background="#3498db"; document.getElementById('btnCancelEdit').style.display='none'; }
+        function deleteSession(id) { if(confirm("Apagar?")){ studyData=studyData.filter(i=>i.id!==id); saveAll(); renderLists(); } }
+
+        function renderLists() {
+            const tList = document.getElementById('timer-list'), mList = document.getElementById('manual-list');
+            const today = getRawDateStr(new Date()), mDate = document.getElementById('manualDate').value;
+            renderUL(tList, studyData.filter(d=>d.rawDate===today)); 
+            renderUL(mList, studyData.filter(d=>d.rawDate===mDate));
+            updateDailyStats(); // Hoje (Timer)
+            updateDailyStats(mDate); // Data Selecionada (Manual)
+        }
+        function renderUL(ul, arr) {
+            ul.innerHTML = arr.length ? '' : '<li style="text-align:center;color:#999;padding:10px">Vazio</li>';
+            arr.forEach(i => ul.innerHTML += `<li class="history-item"><div class="history-info"><strong>${i.activity}</strong><span class="history-date">${i.displayDate}</span></div><div><span style="font-weight:bold">${formatTimeInfo(i.duration)}</span><button class="action-btn" onclick="editEntry(${i.id})">✏️</button><button class="action-btn" onclick="deleteSession(${i.id})" style="color:red">❌</button></div></li>`);
+        }
+        document.getElementById('manualDate').addEventListener('change', renderLists);
+
+        // --- 7. DASHBOARD ---
+        function toggleCustomDate() { document.getElementById('customDates').style.display = document.getElementById('filterRange').value==='custom'?'block':'none'; }
+        let chartRadar=null, chartBar=null;
+        function applyFilter() {
+            const r = document.getElementById('filterRange').value; const today = new Date(); let data = [];
+            if(r==='all') data=studyData;
+            else if(r==='today') data=studyData.filter(d=>d.rawDate===getRawDateStr(today));
+            else if(r==='yesterday') { const y=new Date(); y.setDate(y.getDate()-1); data=studyData.filter(d=>d.rawDate===getRawDateStr(y)); }
+            else if(r==='week') {
+                const day = today.getDay(); const diff = today.getDate() - day; 
+                const start = new Date(today); start.setDate(diff); const end = new Date(today); end.setDate(diff+6);
+                data = studyData.filter(d => d.rawDate >= getRawDateStr(start) && d.rawDate <= getRawDateStr(end));
+            } else { const s=document.getElementById('dateStart').value, e=document.getElementById('dateEnd').value; if(s&&e) data=studyData.filter(d=>d.rawDate>=s && d.rawDate<=e); }
+            updateDashboard(data);
+        }
+        function updateDashboard(data) {
+            let totals={ler:0, escutar:0, falar:0, escrever:0}, actTotals={};
+            data.forEach(i => { (senseMap[i.activity]||[]).forEach(s=>totals[s]+=i.duration); actTotals[i.activity]=(actTotals[i.activity]||0)+i.duration; });
+            ['ler','escutar','falar','escrever'].forEach(k => document.getElementById(`time-${k}`).textContent = formatHM(totals[k]));
+            if(chartRadar) chartRadar.destroy();
+            chartRadar = new Chart(document.getElementById('radarChart'), { type: 'radar', data: { labels: ['Ler','Escutar','Falar','Escrever'], datasets: [{ label:'Horas', data:[totals.ler/3600, totals.escutar/3600, totals.falar/3600, totals.escrever/3600], backgroundColor:'rgba(52, 152, 219, 0.2)', borderColor:'#3498db', borderWidth:2 }] }, options: { responsive:true, maintainAspectRatio:false } });
+            const sorted = Object.entries(actTotals).sort((a,b)=>b[1]-a[1]);
+            if(chartBar) chartBar.destroy();
+            chartBar = new Chart(document.getElementById('barActivityChart'), { type: 'bar', data: { labels: sorted.map(x=>x[0]), datasets: [{ label:'Horas', data: sorted.map(x=>x[1]/3600), backgroundColor:'#27ae60', borderRadius:5 }] }, options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} } });
+        }
+
+        // --- 8. CONFIG UI ---
+        function initConfigUI() {
+            document.getElementById('dailyGoal').value = configData.goal; document.getElementById('currentLevel').value = configData.currentLevel;
+            
+            // Novos campos
+            document.getElementById('checkCardGoal').checked = configData.cardGoalEnabled || false;
+            document.getElementById('inputCardGoal').value = configData.cardGoalQty || 0;
+            toggleCardGoalInput();
+
+            document.querySelectorAll('.day-circle').forEach((c, idx) => c.classList.toggle('selected', configData.days.includes(idx)));
+            saveConfigAndRecalc();
+        }
+        function toggleCardGoalInput() {
+            const chk = document.getElementById('checkCardGoal').checked;
+            document.getElementById('divCardGoalInput').style.display = chk ? 'block' : 'none';
+            saveConfigAndRecalc();
+        }
+        function saveConfigAndRecalc() {
+            configData.goal = parseFloat(document.getElementById('dailyGoal').value) || 0;
+            configData.currentLevel = document.getElementById('currentLevel').value;
+            configData.cardGoalEnabled = document.getElementById('checkCardGoal').checked;
+            configData.cardGoalQty = parseInt(document.getElementById('inputCardGoal').value) || 0;
+            saveAll(); renderLevelTables();
+        }
+        function toggleDay(el, idx) {
+            if(configData.days.includes(idx)) configData.days = configData.days.filter(d=>d!==idx); else configData.days.push(idx);
+            el.classList.toggle('selected'); saveConfigAndRecalc();
+        }
+        function updateLevel(lvl, col, val) { configData.levels[lvl][col] = Number(val); saveConfigAndRecalc(); }
+        function renderLevelTables() {
+            const tbodyPct = document.getElementById('levelTableBody'), tbodyHrs = document.getElementById('hoursTableBody');
+            tbodyPct.innerHTML = ''; tbodyHrs.innerHTML = '';
+            const totalCycle = configData.goal * configData.days.length * 12;
+            levelsOrder.forEach(lvl => {
+                const isCurrent = lvl === configData.currentLevel; const vals = configData.levels[lvl]; const total = vals.reduce((a,b)=>a+b,0);
+                const rowClass = isCurrent ? 'class="current-level-row"' : '';
+                tbodyPct.innerHTML += `<tr ${rowClass}><td><span class="level-badge lvl-${lvl.toLowerCase()}">${lvl}</span></td>
+                    <td><input type="number" value="${vals[0]}" onchange="updateLevel('${lvl}',0,this.value)"></td>
+                    <td><input type="number" value="${vals[1]}" onchange="updateLevel('${lvl}',1,this.value)"></td>
+                    <td><input type="number" value="${vals[2]}" onchange="updateLevel('${lvl}',2,this.value)"></td>
+                    <td><input type="number" value="${vals[3]}" onchange="updateLevel('${lvl}',3,this.value)"></td>
+                    <td style="font-weight:bold; color:${total===100?'green':'red'}">${total}%</td></tr>`;
+                tbodyHrs.innerHTML += `<tr ${rowClass}><td><span class="level-badge lvl-${lvl.toLowerCase()}">${lvl}</span></td>
+                    <td>${(totalCycle*(vals[0]/100)).toFixed(1)}h</td><td>${(totalCycle*(vals[1]/100)).toFixed(1)}h</td>
+                    <td>${(totalCycle*(vals[2]/100)).toFixed(1)}h</td><td>${(totalCycle*(vals[3]/100)).toFixed(1)}h</td></tr>`;
+            });
+        }
+
+        // --- 9. NAVEGAÇÃO LATERAL ---
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+            document.getElementById('tab-' + t).classList.add('active');
+            
+            const btnIndexMap = {'timer':0, 'manual':1, 'srs':2, 'cycles':3, 'stats':4, 'config':5};
+            const btns = document.querySelectorAll('.nav-btn');
+            if(btns[btnIndexMap[t]]) btns[btnIndexMap[t]].classList.add('active');
+
+            if(t==='cycles') renderCyclesTab(); 
+            else if(t==='stats') applyFilter(); 
+            else if(t==='srs') renderFlashcardsTab();
+        }
+
+        loadData(); renderLists();
+    </script>
+</body>
+</html>
