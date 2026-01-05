@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <title>Idiomas - Mundo Autodidata</title>
+    <title>App Grupo Boticario</title>
 
     <link rel="manifest" href="manifest.json">
-    
     <meta name="theme-color" content="#27ae60">
-    
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Estudos GB">
@@ -21,16 +19,8 @@
         body {font-family: 'Segoe UI', sans-serif; background-color: #eef2f5; margin: 0; padding: 0; min-height: 100vh;}
 
         .container { 
-            background-color: white; 
-            border-radius: 15px; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
-            width: 100%; 
-            max-width: 1400px; 
-            height: 100vh; 
-            overflow: hidden; 
-            display: flex; 
-            flex-direction: row;
-            margin: 0 auto;
+            background-color: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
+            width: 100%; max-width: 1400px; height: 100vh; overflow: hidden; display: flex; flex-direction: row; margin: 0 auto;
         }
         
         /* SIDEBAR */
@@ -100,12 +90,10 @@
         .cycle-empty-state { text-align: center; padding: 50px 20px; background: #f9f9f9; border-radius: 10px; border: 2px dashed #ddd; color: #777;}
         .cycle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; flex-wrap: wrap; gap: 10px; }
         .cycle-dates { font-size: 0.9rem; color: #555; background: white; padding: 5px 15px; border-radius: 20px; border: 1px solid #ddd; }
-        
         .cycle-countdown { display: flex; gap: 15px; justify-content: center; margin: 25px 0; flex-wrap: wrap; }
         .count-box { text-align: center; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); flex: 1; min-width: 100px; }
         .count-num { display: block; font-size: 1.5rem; font-weight: bold; color: #27ae60; }
         .count-lbl { font-size: 0.7rem; color: #777; text-transform: uppercase; font-weight: bold; margin-top: 5px;}
-        
         .cycle-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; flex-wrap: wrap;}
         .btn-cycle-start { background: #27ae60; color: white; padding: 15px 30px; font-size: 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;}
         .btn-cycle-start:hover { transform: scale(1.02); }
@@ -195,7 +183,7 @@
         <div class="sidebar">
             <div class="logo-area">
                 <img src="logo.png" alt="x">
-                <span style="display:block; margin-top:5px; font-weight:bold; color:#555;">Mundo Autodidata</span>
+                <span style="display:block; margin-top:5px; font-weight:bold; color:#555;">App - Grupo Boticário</span>
             </div>
             <div class="nav-menu">
                 <button class="nav-btn active" onclick="switchTab('timer')">⏱️ Cronômetro</button>
@@ -301,6 +289,12 @@
                         </div>
                         <button class="btn-save" onclick="addFlashcard()" style="padding: 8px;">Salvar Cartão</button>
                         
+                        <button onclick="toggleImportCSV()" style="margin-top:10px; background:#f39c12; width:100%; border:none; color:white; padding:8px; border-radius:6px; cursor:pointer;">📥 Importar CSV</button>
+                        <div id="csvImportArea" style="display:none; margin-top:10px;">
+                            <textarea id="csvInput" placeholder="Cole aqui: Frente,Verso (uma por linha)" style="width:100%; height:100px; padding:5px; margin-bottom:5px;"></textarea>
+                            <button onclick="processCSV()" style="width:100%; background:#27ae60; color:white; border:none; padding:8px; border-radius:6px; cursor:pointer;">Processar Importação</button>
+                        </div>
+
                         <h3 style="margin-top:20px;">Banco de Palavras</h3>
                         <input type="text" id="searchFlashcard" placeholder="🔍 Pesquisar cartão..." oninput="renderCardList()" style="margin-bottom:10px;">
                         
@@ -421,25 +415,19 @@
 
             <div id="tab-about" class="tab-content">
                 <h2>Sobre o Aplicativo</h2>
-                
                 <div class="config-section">
                     <h3>Instruções para Colaboradores</h3>
                     <p style="margin-bottom:5px; color:#777;">Utilize este campo para deixar notas sobre atualizações ou regras de uso:</p>
-                    <textarea class="about-text-area">
-Versão 1.0 - Lançamento Inicial
+                    <textarea class="about-text-area">Versão 1.0 - Lançamento Inicial
 - Funcionalidades de Cronômetro e Registro Manual ativas.
-- Sistema de Flashcards com meta diária.
+- Sistema de Flashcards com meta diária e importação CSV.
 - Gestão de Ciclos de 12 semanas.
-- Dashboard completo.
-                    </textarea>
+- Dashboard completo.</textarea>
                 </div>
-
                 <div class="about-centered">
                     <div class="about-txt-top">Plataforma de Desenvolvimento Contínuo</div>
-                    
                     <img src="logo.png" alt="Logo Central" class="about-img">
-                    
-                    <div class="about-txt-bottom">© 2025 Mundo Autodidata - Todos os direitos reservados.</div>
+                    <div class="about-txt-bottom">© 2026 App - Grupo Boticário - Todos os direitos reservados.</div>
                 </div>
             </div>
 
@@ -464,20 +452,7 @@ Versão 1.0 - Lançamento Inicial
             levels: { 'C2': [25,25,25,25], 'C1': [15,20,35,30], 'B2': [20,20,30,30], 'B1': [20,30,30,20], 'A2': [30,30,20,20], 'A1': [35,35,15,15] }
         };
         const levelsOrder = ['C2', 'C1', 'B2', 'B1', 'A2', 'A1'];
-        // --- ATUALIZAÇÃO DO MAPA DE SENTIDOS ---
-        const senseMap = {
-            "Ler": ["ler"],
-            "Escutar": ["escutar"],
-            "Escrever": ["escrever"],
-            "Ler/Escutar": ["ler", "escutar"],
-            "Ler/Escutar/Falar": ["ler", "escutar", "falar"],
-            "Ler/Falar": ["ler", "falar"],
-            "Escutar/Falar": ["escutar", "falar"],
-            "Escrever com Tradutor": ["escrever"],
-            "Conversar": ["escutar", "falar"],
-            "Escrever sem Tradutor": ["escrever"], 
-            "Ensinar": ["falar"]
-        };
+        const senseMap = { "Ler": ["ler"], "Escutar": ["escutar"], "Escrever": ["escrever"], "Ler/Escutar": ["ler", "escutar"], "Ler/Escutar/Falar": ["ler", "escutar", "falar"], "Ler/Falar": ["ler", "falar"], "Escutar/Falar": ["escutar", "falar"], "Escrever com Tradutor": ["escrever"], "Conversar": ["escutar", "falar"], "Escrever sem Tradutor": ["escrever"], "Ensinar": ["falar"] };
 
         function loadData() {
             if(localStorage.getItem('studyData_v11')) studyData = JSON.parse(localStorage.getItem('studyData_v11'));
@@ -508,21 +483,10 @@ Versão 1.0 - Lançamento Inicial
             const displayDate = targetDate.split('-').reverse().join('/');
             
             let html = '', cls = '';
-            if (total >= goal && goal > 0) {
-                html = `<div>✅ Meta de ${displayDate} batida! (${formatTimeInfo(total)})</div>`;
-                cls = 'success';
-            } else {
-                html = `<div>Em ${displayDate}: <span class="status-val">${formatTimeInfo(total)}</span></div>
-                        <div>Falta: <span class="status-val">${formatTimeInfo(rem)}</span></div>`;
-            }
-
-            if(!dateStr) {
-                const elTimer = document.getElementById('daily-status-timer');
-                elTimer.innerHTML = html; elTimer.className = 'status-bar ' + cls;
-            } else {
-                const elManual = document.getElementById('daily-status-manual');
-                elManual.innerHTML = html; elManual.className = 'status-bar ' + cls;
-            }
+            if (total >= goal && goal > 0) { html = `<div>✅ Meta de ${displayDate} batida! (${formatTimeInfo(total)})</div>`; cls = 'success'; } 
+            else { html = `<div>Em ${displayDate}: <span class="status-val">${formatTimeInfo(total)}</span></div><div>Falta: <span class="status-val">${formatTimeInfo(rem)}</span></div>`; }
+            if(!dateStr) { const elTimer = document.getElementById('daily-status-timer'); elTimer.innerHTML = html; elTimer.className = 'status-bar ' + cls; } 
+            else { const elManual = document.getElementById('daily-status-manual'); elManual.innerHTML = html; elManual.className = 'status-bar ' + cls; }
         }
 
         // --- 4. FLASHCARDS (SRS) ---
@@ -540,98 +504,86 @@ Versão 1.0 - Lançamento Inicial
             const b = document.getElementById('newBack').value;
             if(!f || !b) return alert("Preencha frente e verso");
             
-            flashcards.push({
-                id: Date.now(), front: f, back: b,
-                level: 0, nextReview: getRawDateStr(new Date())
-            });
-            
-            document.getElementById('newFront').value = '';
-            document.getElementById('newBack').value = '';
-            saveAll();
-            renderCardList();
-            prepareStudySession();
-            updateCardGoalStats();
+            flashcards.push({ id: Date.now(), front: f, back: b, level: 0, nextReview: getRawDateStr(new Date()) });
+            document.getElementById('newFront').value = ''; document.getElementById('newBack').value = '';
+            saveAll(); renderCardList(); prepareStudySession(); updateCardGoalStats();
         }
 
         function deleteFlashcard(id) {
-            if(confirm("Deletar cartão?")) {
-                flashcards = flashcards.filter(c => c.id !== id);
-                saveAll();
-                renderFlashcardsTab();
-            }
+            if(confirm("Deletar cartão?")) { flashcards = flashcards.filter(c => c.id !== id); saveAll(); renderFlashcardsTab(); }
         }
 
         function renderCardList() {
             const tbody = document.getElementById('flashcards-list');
             const searchTerm = document.getElementById('searchFlashcard') ? document.getElementById('searchFlashcard').value.toLowerCase() : '';
             tbody.innerHTML = '';
-            const filteredCards = flashcards.filter(c => 
-                c.front.toLowerCase().includes(searchTerm) || 
-                c.back.toLowerCase().includes(searchTerm)
-            );
-            filteredCards.forEach(c => {
-                tbody.innerHTML += `
-                    <tr>
-                        <td>${c.front}</td><td>${c.back}</td><td>${c.level}</td>
-                        <td><button onclick="deleteFlashcard(${c.id})" style="color:red;border:none;background:none;cursor:pointer;">❌</button></td>
-                    </tr>`;
-            });
+            const filteredCards = flashcards.filter(c => c.front.toLowerCase().includes(searchTerm) || c.back.toLowerCase().includes(searchTerm));
+            filteredCards.forEach(c => { tbody.innerHTML += `<tr><td>${c.front}</td><td>${c.back}</td><td>${c.level}</td><td><button onclick="deleteFlashcard(${c.id})" style="color:red;border:none;background:none;cursor:pointer;">❌</button></td></tr>`; });
         }
 
         function prepareStudySession() {
             const today = getRawDateStr(new Date());
             studyQueue = flashcards.filter(c => c.nextReview <= today);
             document.getElementById('srs-count').textContent = `Pendentes: ${studyQueue.length}`;
-            if(studyQueue.length > 0) {
-                currentCard = studyQueue[0];
-                showCardFace();
-            } else {
-                currentCard = null;
-                document.getElementById('card-front').textContent = "Tudo em dia! 🎉";
-                document.getElementById('card-back').classList.remove('visible');
-                document.getElementById('btn-show-answer').style.display = 'none';
-                document.getElementById('srs-controls').classList.remove('visible');
-            }
+            if(studyQueue.length > 0) { currentCard = studyQueue[0]; showCardFace(); } 
+            else { currentCard = null; document.getElementById('card-front').textContent = "Tudo em dia! 🎉"; document.getElementById('card-back').classList.remove('visible'); document.getElementById('btn-show-answer').style.display = 'none'; document.getElementById('srs-controls').classList.remove('visible'); }
         }
 
         function showCardFace() {
-            document.getElementById('card-front').textContent = currentCard.front;
-            document.getElementById('card-back').textContent = currentCard.back;
-            document.getElementById('card-back').classList.remove('visible');
-            document.getElementById('btn-show-answer').style.display = 'inline-block';
-            document.getElementById('srs-controls').classList.remove('visible');
+            document.getElementById('card-front').textContent = currentCard.front; document.getElementById('card-back').textContent = currentCard.back;
+            document.getElementById('card-back').classList.remove('visible'); document.getElementById('btn-show-answer').style.display = 'inline-block'; document.getElementById('srs-controls').classList.remove('visible');
         }
 
         function showAnswer() {
-            document.getElementById('card-back').classList.add('visible');
-            document.getElementById('btn-show-answer').style.display = 'none';
-            document.getElementById('srs-controls').classList.add('visible');
+            document.getElementById('card-back').classList.add('visible'); document.getElementById('btn-show-answer').style.display = 'none'; document.getElementById('srs-controls').classList.add('visible');
         }
 
         function rateCard(success) {
             const intervals = [1, 3, 7, 14, 30, 60, 90];
-            if(success) {
-                currentCard.level++;
-                const daysToAdd = intervals[Math.min(currentCard.level, intervals.length)-1] || 90;
-                const nextDate = new Date();
-                nextDate.setDate(nextDate.getDate() + daysToAdd);
-                currentCard.nextReview = getRawDateStr(nextDate);
-            } else {
-                currentCard.level = 0;
-                const nextDate = new Date();
-                nextDate.setDate(nextDate.getDate() + 1);
-                currentCard.nextReview = getRawDateStr(nextDate);
-            }
-            const idx = flashcards.findIndex(c => c.id === currentCard.id);
-            flashcards[idx] = currentCard;
-            saveAll();
-            prepareStudySession();
+            if(success) { currentCard.level++; const daysToAdd = intervals[Math.min(currentCard.level, intervals.length)-1] || 90; const nextDate = new Date(); nextDate.setDate(nextDate.getDate() + daysToAdd); currentCard.nextReview = getRawDateStr(nextDate); } 
+            else { currentCard.level = 0; const nextDate = new Date(); nextDate.setDate(nextDate.getDate() + 1); currentCard.nextReview = getRawDateStr(nextDate); }
+            const idx = flashcards.findIndex(c => c.id === currentCard.id); flashcards[idx] = currentCard;
+            saveAll(); prepareStudySession();
         }
 
+        // --- IMPORTAÇÃO CSV ---
+        function toggleImportCSV() {
+            const area = document.getElementById('csvImportArea');
+            area.style.display = area.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function processCSV() {
+            const txt = document.getElementById('csvInput').value;
+            if(!txt) return alert("Cole o texto CSV!");
+            
+            const lines = txt.split('\n');
+            let addedCount = 0;
+            
+            lines.forEach(line => {
+                if(line.includes(',')) {
+                    const parts = line.split(',');
+                    const f = parts[0].trim();
+                    const b = parts.slice(1).join(',').trim(); // Junta o resto caso tenha virgulas no verso
+                    
+                    if(f && b) {
+                        flashcards.push({ id: Date.now() + Math.random(), front: f, back: b, level: 0, nextReview: getRawDateStr(new Date()) });
+                        addedCount++;
+                    }
+                }
+            });
+            
+            saveAll();
+            document.getElementById('csvInput').value = '';
+            toggleImportCSV();
+            renderCardList();
+            updateCardGoalStats();
+            alert(`${addedCount} cards importados com sucesso!`);
+        }
+
+        // --- LÓGICA DE META ACUMULADA ---
         function updateCardGoalStats() {
             const statsDiv = document.getElementById('card-goal-stats');
             if(!configData.cardGoalEnabled) { statsDiv.style.display = 'none'; return; }
-            
             const activeCycle = getActiveCycle();
             if(!activeCycle) { statsDiv.style.display = 'none'; return; }
 
@@ -643,23 +595,40 @@ Versão 1.0 - Lançamento Inicial
 
             const startDate = new Date(activeCycle.startDate + 'T00:00:00');
             const endDate = new Date(activeCycle.endDate + 'T23:59:59');
+            
+            // Total adicionado no ciclo
             const addedInCycle = flashcards.filter(c => c.id >= startDate.getTime() && c.id <= endDate.getTime()).length;
 
             const todayStr = getRawDateStr(new Date());
             const addedToday = flashcards.filter(c => getRawDateStr(new Date(c.id)) === todayStr).length;
             const pendingToday = Math.max(0, dailyGoal - addedToday);
 
-            let expectedTotalToDate = 0;
+            // CÁLCULO ACUMULATIVO ATÉ ONTEM
+            let expectedTotalUntilYesterday = 0;
             let loopDate = new Date(startDate);
-            const now = new Date();
-            const cutoffDate = now > endDate ? endDate : now;
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            yesterday.setHours(23, 59, 59, 999);
+            
+            const cutoffDate = yesterday > endDate ? endDate : yesterday;
 
             while(loopDate <= cutoffDate) {
-                if(activeCycle.studyDays.includes(loopDate.getDay())) { expectedTotalToDate += dailyGoal; }
+                if(activeCycle.studyDays.includes(loopDate.getDay())) { expectedTotalUntilYesterday += dailyGoal; }
                 loopDate.setDate(loopDate.getDate() + 1);
             }
+
+            // Total adicionado até ontem (exclui hoje)
+            const addedUntilYesterday = flashcards.filter(c => {
+                const cDate = getRawDateStr(new Date(c.id));
+                return c.id >= startDate.getTime() && c.id <= endDate.getTime() && cDate !== todayStr;
+            }).length;
+
+            // Atraso acumulado (se negativo, vira 0)
+            const backlog = Math.max(0, expectedTotalUntilYesterday - addedUntilYesterday);
             
-            const pendingTotal = Math.max(0, expectedTotalToDate - addedInCycle);
+            // Pendente Total = Atraso acumulado + O que falta hoje
+            const pendingTotal = backlog + pendingToday;
+            
             const percent = totalCycleGoal > 0 ? ((addedInCycle / totalCycleGoal) * 100).toFixed(1) : 0;
 
             document.getElementById('cg-today').textContent = pendingToday;
@@ -686,7 +655,7 @@ Versão 1.0 - Lançamento Inicial
         }
         
         function endCycle(id) { 
-            if(confirm("Finalizar o ciclo? A data de término será ajustada para hoje, impedindo novos registros neste ciclo.")) { 
+            if(confirm("Finalizar o ciclo?")) { 
                 const c = cyclesData.find(x => x.id === id); 
                 if(c) {
                     c.status = 'completed'; 
@@ -708,19 +677,10 @@ Versão 1.0 - Lançamento Inicial
                 const end = new Date(activeCycle.endDate + 'T00:00:00');
                 const diffTime = end - today;
                 const weeksRemaining = Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7);
-                
-                // CÁLCULO CORRIGIDO: DIAS DO CICLO (Não dias corridos)
-                const cycleWeeks = 12; 
-                const plannedDaysPerWeek = activeCycle.studyDays.length;
-                const totalPlannedDays = cycleWeeks * plannedDaysPerWeek; 
-
+                const cycleWeeks = 12; const plannedDaysPerWeek = activeCycle.studyDays.length; const totalPlannedDays = cycleWeeks * plannedDaysPerWeek; 
                 const cycleLogs = studyData.filter(d => d.rawDate >= activeCycle.startDate && d.rawDate <= activeCycle.endDate);
                 const uniqueDaysStudied = new Set(cycleLogs.map(d => d.rawDate)).size; 
-                
-                // Saldo restante
                 const daysRemaining = Math.max(0, totalPlannedDays - uniqueDaysStudied); 
-                
-                // Progresso
                 const progressPct = totalPlannedDays > 0 ? ((uniqueDaysStudied / totalPlannedDays) * 100).toFixed(1) : 0;
 
                 activeArea.innerHTML = `
@@ -843,12 +803,9 @@ Versão 1.0 - Lançamento Inicial
         // --- 8. CONFIG UI ---
         function initConfigUI() {
             document.getElementById('dailyGoal').value = configData.goal; document.getElementById('currentLevel').value = configData.currentLevel;
-            
-            // Novos campos
             document.getElementById('checkCardGoal').checked = configData.cardGoalEnabled || false;
             document.getElementById('inputCardGoal').value = configData.cardGoalQty || 0;
             toggleCardGoalInput();
-
             document.querySelectorAll('.day-circle').forEach((c, idx) => c.classList.toggle('selected', configData.days.includes(idx)));
             saveConfigAndRecalc();
         }
@@ -907,4 +864,3 @@ Versão 1.0 - Lançamento Inicial
     </script>
 </body>
 </html>
-
