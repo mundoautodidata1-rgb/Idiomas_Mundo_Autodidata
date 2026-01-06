@@ -470,11 +470,10 @@
 
         // --- 2. UTILITÁRIOS ---
         function getRawDateStr(d) { return d.toISOString().split('T')[0]; }
-        function formatDateBR(raw) { if(!raw) return ''; const parts = raw.split('-'); return ${parts[2]}/${parts[1]}/${parts[0].slice(2)}; }
-        function formatTimeInfo(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=Math.floor(s%60); return ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}; }
-        function formatHM(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return ${h}h ${m}m; }
+        function formatDateBR(raw) { if(!raw) return ''; const parts = raw.split('-'); return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`; }
+        function formatTimeInfo(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=Math.floor(s%60); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`; }
+        function formatHM(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return `${h}h ${m}m`; }
 
-        
         // --- 3. STATUS DIÁRIO ---
         function updateDailyStats(dateStr = null) {
             const targetDate = dateStr || getRawDateStr(new Date());
@@ -865,4 +864,3 @@
     </script>
 </body>
 </html>
-
