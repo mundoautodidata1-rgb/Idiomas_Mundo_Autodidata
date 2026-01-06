@@ -469,19 +469,12 @@
         }
 
         // --- 2. UTILITÁRIOS ---
-        // SUBSTITUA A FUNÇÃO ANTIGA POR ESTA NOVA:
-        function getRawDateStr(d) { 
-            const year = d.getFullYear();
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const day = String(d.getDate()).padStart(2, '0');
-            return ${year}-${month}-${day};
-        }
-
-        // Mantenha as outras funções abaixo dela como estão...
+        function getRawDateStr(d) { return d.toISOString().split('T')[0]; }
         function formatDateBR(raw) { if(!raw) return ''; const parts = raw.split('-'); return ${parts[2]}/${parts[1]}/${parts[0].slice(2)}; }
         function formatTimeInfo(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=Math.floor(s%60); return ${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}; }
         function formatHM(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return ${h}h ${m}m; }
 
+        
         // --- 3. STATUS DIÁRIO ---
         function updateDailyStats(dateStr = null) {
             const targetDate = dateStr || getRawDateStr(new Date());
