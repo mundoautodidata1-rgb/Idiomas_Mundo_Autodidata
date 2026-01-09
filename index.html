@@ -289,7 +289,7 @@
                         </div>
                         <button class="btn-save" onclick="addFlashcard()" style="padding: 8px;">Salvar Cartão</button>
                         
-                        <button onclick="toggleImportCSV()" style="margin-top:10px; background:#f39c12; width:100%; border:none; color:white; padding:8px; border-radius:6px; cursor:pointer;">📥 Importar CSV</button>
+                        <button onclick="toggleImportCSV()" style="margin-top:10px; background:#f39c12; width:100%; border:none; color:white; padding:8px; border-radius:6px; cursor:pointer;">📥 Importar Cards</button>
                         <div id="csvImportArea" style="display:none; margin-top:10px;">
                             <textarea id="csvInput" placeholder="Cole aqui: Frente,Verso (uma por linha)" style="width:100%; height:100px; padding:5px; margin-bottom:5px;"></textarea>
                             <button onclick="processCSV()" style="width:100%; background:#27ae60; color:white; border:none; padding:8px; border-radius:6px; cursor:pointer;">Processar Importação</button>
@@ -488,11 +488,20 @@
             localStorage.setItem('flashcards_v11', JSON.stringify(flashcards));
         }
 
-        // --- 2. UTILITÁRIOS ---
-        function getRawDateStr(d) { return d.toISOString().split('T')[0]; }
+
+
+	// --- 2. UTILITÁRIOS ---
+        function getRawDateStr(d) { 
+            // Usa o locale 'sv-SE' (Suécia) pois ele formata nativamente como AAAA-MM-DD
+            // e força o fuso horário para o Brasil (America/Sao_Paulo)
+            return d.toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' }); 
+        }
+        
         function formatDateBR(raw) { if(!raw) return ''; const parts = raw.split('-'); return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`; }
         function formatTimeInfo(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=Math.floor(s%60); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`; }
         function formatHM(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return `${h}h ${m}m`; }
+
+
 
         // --- 3. STATUS DIÁRIO ---
         function updateDailyStats(dateStr = null) {
