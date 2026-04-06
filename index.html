@@ -58,69 +58,7 @@
         .btn-stop { background-color: #c0392b; }
         button:disabled { opacity: 0.5; cursor: not-allowed; }
 
-
-/* Container principal do item manual */
-.manual-item {
-    display: flex;
-    justify-content: space-between; /* Atividade na esquerda, Ações na direita */
-    align-items: center;
-    padding: 12px 15px;
-    border-bottom: 1px solid #eee;
-    background-color: #fff;
-}
-
-/* Informações (Atividade e Data) */
-.manual-info {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
-.manual-date {
-    font-size: 0.85rem;
-    color: #888;
-}
-
-/* Bloco de Ações (Onde estava o erro) */
-.manual-actions {
-    display: flex;
-    align-items: center; /* Alinha o tempo e os botões na mesma linha horizontal */
-    gap: 20px;           /* Espaço entre o tempo e os ícones */
-    flex-shrink: 0;      /* Impede que o bloco encolha em telas menores */
-}
-
-/* O tempo (00:00:00) */
-.manual-duration {
-    font-weight: bold;
-    font-family: 'Courier New', monospace; /* Fonte mono para os números não "pularem" */
-    font-size: 1rem;
-    color: #333;
-    white-space: nowrap; /* Garante que o tempo nunca quebre linha */
-}
-
-/* Grupo de botões Editar/Excluir */
-.manual-btn-group {
-    display: flex;
-    gap: 10px;
-}
-
-.action-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.1rem;
-    padding: 4px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s;
-}
-
-.action-btn:hover {
-    opacity: 0.7;
-}
-
-
+        .manual-form { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
         .time-row { display: flex; gap: 15px; }
         .time-group { flex: 1; }
         .btn-save { width: 100%; background-color: #3498db; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.2s; }
@@ -861,6 +799,17 @@ renderTabela();
                      <h2>Espanhol</h2>
 <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJcBYmT8=/?embedMode=view_only_without_ui&moveToViewport=-237376,-276274,41598,9575&embedId=240184675892" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
 
+
+<iframe 
+  width="560" 
+  height="315" 
+  src="https://www.youtube-nocookie.com/embed/6FSDHLAXAH0" 
+  title="YouTube video player" 
+  frameborder="0" 
+  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+  referrerpolicy="strict-origin-when-cross-origin" 
+  allowfullscreen>
+</iframe>
             </div>
 
 
@@ -1225,25 +1174,10 @@ renderTabela();
             updateDailyStats(); // Hoje (Timer)
             updateDailyStats(mDate); // Data Selecionada (Manual)
         }
-function renderUL(ul, arr) {
-    ul.innerHTML = arr.length ? '' : '<li style="text-align:center;color:#999;padding:10px">Vazio</li>';
-    arr.forEach(i => {
-        ul.innerHTML += `
-            <li class="manual-item">
-                <div class="manual-info">
-                    <strong>${i.activity}</strong>
-                    <span class="manual-date">${i.displayDate}</span>
-                </div>
-                <div class="manual-actions">
-                    <span class="manual-duration">${formatTimeInfo(i.duration)}</span>
-                    <div class="manual-btn-group">
-                        <button class="action-btn" onclick="editEntry(${i.id})">✏️</button>
-                        <button class="action-btn" onclick="deleteSession(${i.id})" style="color:red">❌</button>
-                    </div>
-                </div>
-            </li>`;
-    });
-}
+        function renderUL(ul, arr) {
+            ul.innerHTML = arr.length ? '' : '<li style="text-align:center;color:#999;padding:10px">Vazio</li>';
+            arr.forEach(i => ul.innerHTML += `<li class="history-item"><div class="history-info"><strong>${i.activity}</strong><span class="history-date">${i.displayDate}</span></div><div><span style="font-weight:bold">${formatTimeInfo(i.duration)}</span><button class="action-btn" onclick="editEntry(${i.id})">✏️</button><button class="action-btn" onclick="deleteSession(${i.id})" style="color:red">❌</button></div></li>`);
+        }
         document.getElementById('manualDate').addEventListener('change', renderLists);
 
         // --- 7. DASHBOARD ---
