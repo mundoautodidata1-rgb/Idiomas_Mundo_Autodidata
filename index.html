@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>Idiomas - Mundo Autodidata</title>
 
-	<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
-	
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#27ae60">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -17,8 +18,8 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* --- ESTILOS GERAIS --- */
-        body {font-family: 'Segoe UI', sans-serif; background-color: #eef2f5; margin: 0; padding: 0; min-height: 100vh;}
+
+
 
 /* --- ESTILOS DA TELA DE LOGIN --- */
 #login-screen {
@@ -55,11 +56,13 @@
 
 /* Oculta o aplicativo inteiro por padrão */
 #app-content {
-	style="display: none;
     display: none;
 }
 
-		
+
+        /* --- ESTILOS GERAIS --- */
+        body {font-family: 'Segoe UI', sans-serif; background-color: #eef2f5; margin: 0; padding: 0; min-height: 100vh;}
+
         .container { 
             background-color: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); 
             width: 100%; max-width: 1800px; height: 100vh; overflow: hidden; display: flex; flex-direction: row; margin: 0 auto;
@@ -307,35 +310,10 @@
         <button class="login-btn" onclick="netlifyIdentity.open()">Entrar na Plataforma</button>
     </div>
 
-    <div id="app-content" style="display: none;"> 
-        
-        <nav>...</nav>
-        <div class="container">...</div>
-        <div id="modais">...</div>
-        
-    </div> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // ... Seus scripts do aplicativo (funções, gráficos, etc) ...
+    <div id="app-content">
+        </div>
 
-        // --- CONTROLE DE ACESSO NETLIFY IDENTITY ---
-        if (window.netlifyIdentity) {
-            netlifyIdentity.on("init", user => {
-                if (!user) {
-                    // Deslogado
-                    document.getElementById('login-screen').style.display = 'flex';
-                    document.getElementById('app-content').style.display = 'none';
-                    netlifyIdentity.on("login", () => document.location.reload());
-                } else {
-                    // Logado
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('app-content').style.display = 'block'; 
-                }
-            });
-            netlifyIdentity.on("logout", () => document.location.reload());
-        }
-    </script>
 
-	
     <div class="container">
         <div class="sidebar">
             <div class="logo-area">
@@ -1375,7 +1353,7 @@ renderTabela();
             });
         }
     </script>
-	
+
 </body>
 </html>
 
