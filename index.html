@@ -55,6 +55,7 @@
 
 /* Oculta o aplicativo inteiro por padrão */
 #app-content {
+	style="display: none;
     display: none;
 }
 
@@ -299,16 +300,43 @@
 </head>
 <body>
 
-<div id="login-screen">
+
+	<body>
+
+    <div id="login-screen">
         <h1>Mundo Autodidata</h1>
         <p>Acesso restrito. Faça login para continuar.</p>
         <button class="login-btn" onclick="netlifyIdentity.open()">Entrar na Plataforma</button>
     </div>
 
-    <div id="app-content">
-</div>
+    <div id="app-content" style="display: none;"> 
+        
+        <nav>...</nav>
+        <div class="container">...</div>
+        <div id="modais">...</div>
+        
+    </div> <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // ... Seus scripts do aplicativo (funções, gráficos, etc) ...
 
-
+        // --- CONTROLE DE ACESSO NETLIFY IDENTITY ---
+        if (window.netlifyIdentity) {
+            netlifyIdentity.on("init", user => {
+                if (!user) {
+                    // Deslogado
+                    document.getElementById('login-screen').style.display = 'flex';
+                    document.getElementById('app-content').style.display = 'none';
+                    netlifyIdentity.on("login", () => document.location.reload());
+                } else {
+                    // Logado
+                    document.getElementById('login-screen').style.display = 'none';
+                    document.getElementById('app-content').style.display = 'block'; 
+                }
+            });
+            netlifyIdentity.on("logout", () => document.location.reload());
+        }
+    </script>
+</body>
 
 	
     <div class="container">
