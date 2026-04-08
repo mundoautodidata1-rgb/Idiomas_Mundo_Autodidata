@@ -1346,11 +1346,11 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 // 🔥 TORNA GLOBAL (pra usar fora do module)
-window.db = db;
-window.firebaseDoc = doc;
-window.firebaseSetDoc = setDoc;
-window.firebaseCollection = collection;
-window.firebaseAddDoc = addDoc;
+window.firebase = {
+    db: db,
+    doc: doc,
+    setDoc: setDoc
+};
 </script>
 
 
@@ -1377,7 +1377,7 @@ else {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-content').style.display = 'block';
 
-    // 🔥 PEGAR DADOS DO USUÁRIO
+    // 🔽 PEGA DADOS DO USUÁRIO
     const userData = {
         id: user.id,
         email: user.email,
@@ -1386,16 +1386,16 @@ else {
 
     console.log("Usuário logado:", userData);
 
-    // 🔥 SALVAR NO FIRESTORE
+    // 🔽 SALVA NO FIRESTORE
     async function salvarUsuario() {
         try {
-            await window.setDoc(
-                window.doc(window.db, "usuarios", userData.id),
+            await window.firebase.setDoc(
+    		window.firebase.doc(window.firebase.db, "usuarios", userData.id),
                 userData
             );
-            console.log("Usuário salvo no Firestore!");
+            console.log("✅ Usuário salvo no Firestore!");
         } catch (e) {
-            console.error("Erro ao salvar:", e);
+            console.error("❌ Erro ao salvar:", e);
         }
     }
 
