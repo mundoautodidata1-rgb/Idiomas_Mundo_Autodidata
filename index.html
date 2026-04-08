@@ -1327,6 +1327,34 @@ renderTabela();
         loadData(); renderLists();
     </script>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+import { getFirestore, collection, addDoc, setDoc, doc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAdSB-U9KYOENSQLlV1_CJapuQgMgXWiIU",
+  authDomain: "idiomas-mundo-autodidata.firebaseapp.com",
+  projectId: "idiomas-mundo-autodidata",
+  storageBucket: "idiomas-mundo-autodidata.firebasestorage.app",
+  messagingSenderId: "362445102611",
+  appId: "1:362445102611:web:b5faf0d0006e29f1f2a9e6",
+  measurementId: "G-QVPZ4B2HVT"
+};
+
+// Inicializa
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// 🔥 TORNA GLOBAL (pra usar fora do module)
+window.db = db;
+window.firebaseDoc = doc;
+window.firebaseSetDoc = setDoc;
+window.firebaseCollection = collection;
+window.firebaseAddDoc = addDoc;
+</script>
+
+
+
 <script>
         // --- CONTROLE DE ACESSO NETLIFY IDENTITY ---
         if (window.netlifyIdentity) {
@@ -1342,11 +1370,39 @@ renderTabela();
                     netlifyIdentity.on("login", () => {
                         document.location.reload();
                     });
-                } else {
-                    // Se ESTIVER logado, esconde a tela de login e mostra o sistema
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('app-content').style.display = 'block'; // Ou 'flex', dependendo de como está o seu body original
-                }
+                } 
+
+
+else {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-content').style.display = 'block';
+
+    // 🔥 PEGAR DADOS DO USUÁRIO
+    const userData = {
+        id: user.id,
+        email: user.email,
+        name: user.user_metadata?.full_name || "Sem nome"
+    };
+
+    console.log("Usuário logado:", userData);
+
+    // 🔥 SALVAR NO FIRESTORE
+    async function salvarUsuario() {
+        try {
+            await window.setDoc(
+                window.doc(window.db, "usuarios", userData.id),
+                userData
+            );
+            console.log("Usuário salvo no Firestore!");
+        } catch (e) {
+            console.error("Erro ao salvar:", e);
+        }
+    }
+
+    salvarUsuario();
+}
+
+
             });
 
             // Recarrega a página ao deslogar para travar o acesso novamente
