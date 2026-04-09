@@ -196,48 +196,36 @@
 
         /* --- FORMULÁRIO RÁPIDO DE AULAS --- */
         .aula-quick-save {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #e0e0e0;
-            margin-top: 10px;
-            flex-wrap: wrap; /* Permite quebrar linha em telas muito finas */
-        }
-        
-        /* Zera as margens padrão do seu CSS global para ficarem alinhados */
-        .aula-quick-save select, 
-        .aula-quick-save input[type="time"] {
-            margin-bottom: 0; 
-        }
-        
-        .aula-activity-select { flex: 2; min-width: 150px; }
-        
-        .aula-time-input {
-            flex: 1;
-            min-width: 100px;
-            text-align: center;
-            font-family: monospace; /* Deixa os números mais legíveis */
-        }
-        
-        .aula-save-btn {
-            flex: 1;
-            min-width: 100px;
-            background-color: #3498db; /* Azul */
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
-            height: 40px; /* Mesma altura dos inputs */
-        }
-        
-        .aula-save-btn:hover { background-color: #2980b9; }
+    display: flex;
+    gap: 5px;
+    background: #f1f3f5;
+    padding: 5px 8px;
+    border-radius: 6px;
+    align-items: center;
+    max-width: 500px; /* Não deixa ocupar a tela toda */
+}
 
+.aula-quick-save select, 
+.aula-quick-save input, 
+.aula-quick-save button {
+    height: 28px;
+    font-size: 12px;
+    padding: 0 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: 0;
+}
+
+.aula-activity-select { flex: 2; }
+.aula-time-input { width: 85px; text-align: center; }
+.aula-save-btn { 
+    background: #3498db; 
+    color: white; 
+    border: none; 
+    cursor: pointer;
+    font-weight: bold;
+    flex: 1;
+}
         
     </style>
 </head>
