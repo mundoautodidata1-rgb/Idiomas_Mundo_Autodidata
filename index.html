@@ -161,6 +161,54 @@
         tr.current-level-row td { border-top: 2px solid #f1c40f; border-bottom: 2px solid #f1c40f; font-weight: bold;}
         .table-title { display: block; margin-bottom: 10px; font-weight: bold; color: #34495e; font-size: 0.95rem; }
 
+
+
+/* --- FORMULÁRIO RÁPIDO DE AULAS --- */
+.aula-quick-save {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8f9fa;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+    margin-top: 10px;
+    flex-wrap: wrap; /* Permite quebrar linha em telas muito finas */
+}
+
+/* Zera as margens padrão do seu CSS global para ficarem alinhados */
+.aula-quick-save select, 
+.aula-quick-save input[type="time"] {
+    margin-bottom: 0; 
+}
+
+.aula-activity-select { flex: 2; min-width: 150px; }
+
+.aula-time-input {
+    flex: 1;
+    min-width: 100px;
+    text-align: center;
+    font-family: monospace; /* Deixa os números mais legíveis */
+}
+
+.aula-save-btn {
+    flex: 1;
+    min-width: 100px;
+    background-color: #3498db; /* Azul */
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.2s;
+    height: 40px; /* Mesma altura dos inputs */
+}
+
+.aula-save-btn:hover { background-color: #2980b9; }
+
+
+
         /* SOBRE */
         .about-centered { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px dashed #eee; }
         .about-img { max-width: 400px; height: auto; margin: 20px auto; display: block; }
@@ -516,6 +564,27 @@
                     <h2>Espanhol</h2>
                     <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJcBYmT8=/?embedMode=view_only_without_ui&moveToViewport=-237376,-276274,41598,9575&embedId=240184675892" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
                     <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6FSDHLAXAH0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+
+<div class="aula-quick-save">
+    <select class="aula-activity-select">
+        <option value="Ler">1-Ler</option>
+        <option value="Ler/Escutar">2-Ler & Escutar</option>
+        <option value="Ler/Falar" selected>3-Ler & Falar</option>
+        <option value="Escutar">4-Escutar</option>
+        <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
+        <option value="Escutar/Falar">6-Escutar & Falar</option>
+        <option value="Escrever">7-Escrever com Tradutor</option>
+        <option value="Conversar">8-Conversar</option>
+        <option value="Escrever">9-Escrever sem Tradutor</option>
+        <option value="Ensinar">10-Ensinar</option>
+    </select>
+    
+    <input type="time" step="1" class="aula-time-input" value="00:10:00">
+    
+    <button class="aula-save-btn" onclick="salvarAulaRapido(this)">Salvar</button>
+</div>
+
                 </div>
             </div> 
         </div> 
@@ -1033,6 +1102,54 @@
             else if(t==='stats') applyFilter(); 
             else if(t==='srs') renderFlashcardsTab();
         }
+
+
+
+// --- FUNÇÃO DE SALVAMENTO RÁPIDO DAS AULAS ---
+function salvarAulaRapido(btn) {
+    // 1. Encontra a caixa (container) exata deste botão
+    const container = btn.closest('.aula-quick-save');
+    
+    // 2. Pega os valores selecionados naquela caixa
+    const activity = container.querySelector('.aula-activity-select').value;
+    const timeStr = container.querySelector('.aula-time-input').value; // Ex: "00:10:00" ou "00:10"
+    
+    // 3. Converte a string de tempo (HH:MM:SS) para Segundos totais
+    const timeParts = timeStr.split(':');
+    let totalSeconds = 0;
+    
+    if (timeParts.length >= 2) {
+        let hours = parseInt(timeParts[0]) || 0;
+        let mins = parseInt(timeParts[1]) || 0;
+        let secs = parseInt(timeParts[2]) || 0;
+        totalSeconds = (hours * 3600) + (mins * 60) + secs;
+    }
+
+    // 4. Validação simples
+    if (totalSeconds <= 0) {
+        alert("O tempo precisa ser maior que zero!");
+        return;
+    }
+
+    // 5. Salva no banco de dados geral do app (isso já sincroniza com a nuvem e os dashboards)
+    saveStudy(activity, totalSeconds, new Date());
+    
+    // 6. Feedback visual de sucesso (O botão fica verde rapidinho)
+    const textoOriginal = btn.textContent;
+    btn.textContent = "✅ Salvo!";
+    btn.style.backgroundColor = "#27ae60"; // Verde
+    
+    // Atualiza as listas do painel
+    renderLists();
+    
+    // Volta o botão ao normal após 2 segundos
+    setTimeout(() => {
+        btn.textContent = textoOriginal;
+        btn.style.backgroundColor = "#3498db"; // Retorna ao Azul
+    }, 2000);
+}
+
+
 
         // --- CONTROLE DE ACESSO NETLIFY IDENTITY E INÍCIO DO APP ---
         if (window.netlifyIdentity) {
