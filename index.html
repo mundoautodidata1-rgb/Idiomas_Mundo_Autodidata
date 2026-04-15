@@ -194,39 +194,61 @@
             .charts-container { flex-direction: column; }
         }
 
-        /* --- FORMULÁRIO RÁPIDO DE AULAS --- */
-        .aula-quick-save {
-    display: flex;
-    gap: 5px;
-    background: #f1f3f5;
-    padding: 5px 8px;
-    border-radius: 6px;
-    align-items: center;
-    max-width: 500px; /* Não deixa ocupar a tela toda */
+
+.aula-container {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    overflow: hidden;
+    background: white;
 }
 
-.aula-quick-save select, 
-.aula-quick-save input, 
-.aula-quick-save button {
-    height: 28px;
-    font-size: 12px;
-    padding: 0 5px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    margin: 0;
-}
-
-.aula-activity-select { flex: 2; }
-.aula-time-input { width: 85px; text-align: center; }
-.aula-save-btn { 
-    background: #3498db; 
-    color: white; 
-    border: none; 
+/* Cabeçalho com Barra de Progresso */
+.aula-header {
+    padding: 15px;
     cursor: pointer;
-    font-weight: bold;
-    flex: 1;
+    background: #f8f9fa;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
-        
+
+.progress-wrapper {
+    width: 100%;
+    height: 8px;
+    background: #eee;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #27ae60;
+    width: 0%; /* Ajustado via JS */
+    transition: width 0.3s ease;
+}
+
+/* Lista de Atividades (Escondida por padrão) */
+.aula-content {
+    display: none;
+    padding: 15px;
+    border-top: 1px solid #eee;
+}
+
+.atividade-item {
+    padding: 10px;
+    border-bottom: 1px dashed #eee;
+}
+
+/* Botão de Status Salvo */
+.btn-concluido {
+    background-color: #27ae60 !important;
+    cursor: default !important;
+}
+
+
+
+
     </style>
 </head>
 <body>
@@ -545,34 +567,39 @@
                 </div>
 
                 <div id="tab-aulas" class="tab-content">
+
+
+
+<div class="aula-container" id="aula1">
+    <div class="aula-header" onclick="toggleAula('aula1')">
+        <div style="display:flex; justify-content:space-between; font-weight:bold;">
+            <span>Aula 01: Fundamentos</span>
+            <span class="percent-text">0%</span>
+        </div>
+        <div class="progress-wrapper">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+    
+    <div class="aula-content">
+        <div class="atividade-item">
+            <p>1. Assista ao vídeo de introdução</p>
+            <div class="aula-quick-save" data-id="a1_at1">
+                <select class="aula-activity-select"><option value="Escutar">4-Escutar</option></select>
+                <input type="time" class="aula-time-input" value="00:10:00">
+                <button class="aula-save-btn" onclick="concluirAtividade(this, 'a1_at1')">Salvar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
                     <h2>Aulas</h2>
                     <h3>Mural com todos os conteúdos do Mundo Autodidata. Comodidade sem precisar sair do App.</h3>
                     <h2>Espanhol</h2>
                     <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJcBYmT8=/?embedMode=view_only_without_ui&moveToViewport=-237376,-276274,41598,9575&embedId=240184675892" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
                     <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6FSDHLAXAH0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-
-                <div class="aula-quick-save">
-                    <select class="aula-activity-select">
-                        <option value="Ler">1-Ler</option>
-                        <option value="Ler/Escutar">2-Ler & Escutar</option>
-                        <option value="Ler/Falar" selected>3-Ler & Falar</option>
-                        <option value="Escutar">4-Escutar</option>
-                        <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
-                        <option value="Escutar/Falar">6-Escutar & Falar</option>
-                        <option value="Escrever">7-Escrever com Tradutor</option>
-                        <option value="Conversar">8-Conversar</option>
-                        <option value="Escrever">9-Escrever sem Tradutor</option>
-                        <option value="Ensinar">10-Ensinar</option>
-                    </select>
-                    
-                    <input type="time" step="1" class="aula-time-input" value="00:10:00">
-                    
-                    <button class="aula-save-btn" onclick="salvarAulaRapido(this)">Salvar</button>
                 </div>
-                    
-                </div>
-                
             </div> 
         </div> 
     </div>    
@@ -617,54 +644,6 @@
         const levelsOrder = ['C2', 'C1', 'B2', 'B1', 'A2', 'A1'];
         const senseMap = { "Ler": ["ler"], "Escutar": ["escutar"], "Escrever": ["escrever"], "Ler/Escutar": ["ler", "escutar"], "Ler/Escutar/Falar": ["ler", "escutar", "falar"], "Ler/Falar": ["ler", "falar"], "Escutar/Falar": ["escutar", "falar"], "Escrever com Tradutor": ["escrever"], "Conversar": ["escutar", "falar"], "Escrever sem Tradutor": ["escrever"], "Ensinar": ["falar"] };
 
-
-        // --- FUNÇÃO DE SALVAMENTO RÁPIDO DAS AULAS ---
-        function salvarAulaRapido(btn) {
-            // 1. Encontra a caixa (container) exata deste botão
-            const container = btn.closest('.aula-quick-save');
-            
-            // 2. Pega os valores selecionados naquela caixa
-            const activity = container.querySelector('.aula-activity-select').value;
-            const timeStr = container.querySelector('.aula-time-input').value; // Ex: "00:10:00" ou "00:10"
-            
-            // 3. Converte a string de tempo (HH:MM:SS) para Segundos totais
-            const timeParts = timeStr.split(':');
-            let totalSeconds = 0;
-            
-            if (timeParts.length >= 2) {
-                let hours = parseInt(timeParts[0]) || 0;
-                let mins = parseInt(timeParts[1]) || 0;
-                let secs = parseInt(timeParts[2]) || 0;
-                totalSeconds = (hours * 3600) + (mins * 60) + secs;
-            }
-        
-            // 4. Validação simples
-            if (totalSeconds <= 0) {
-                alert("O tempo precisa ser maior que zero!");
-                return;
-            }
-        
-            // 5. Salva no banco de dados geral do app (isso já sincroniza com a nuvem e os dashboards)
-            saveStudy(activity, totalSeconds, new Date());
-            
-            // 6. Feedback visual de sucesso (O botão fica verde rapidinho)
-            const textoOriginal = btn.textContent;
-            btn.textContent = "✅ Salvo!";
-            btn.style.backgroundColor = "#27ae60"; // Verde
-            
-            // Atualiza as listas do painel
-            renderLists();
-            
-            // Volta o botão ao normal após 2 segundos
-            setTimeout(() => {
-                btn.textContent = textoOriginal;
-                btn.style.backgroundColor = "#3498db"; // Retorna ao Azul
-            }, 2000);
-        }
-
-
-
-        
         // BUSCA DA NUVEM (FIREBASE)
         async function loadData() {
             if (!globalUserId || !window.firebase) return;
