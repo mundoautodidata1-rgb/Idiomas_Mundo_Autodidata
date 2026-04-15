@@ -557,35 +557,63 @@
                          <div class="about-txt-bottom">© 2026 App - Mundo Autodidata - Todos os direitos reservados.</div>                   
                     </div>	
                 </div>
+<div id="tab-aulas" class="tab-content">
 
-                <div id="tab-aulas" class="tab-content">
-                    <h2>Aulas</h2>
-                    <h3>Mural com todos os conteúdos do Mundo Autodidata. Comodidade sem precisar sair do App.</h3>
-                    <h2>Espanhol</h2>
-                    <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJcBYmT8=/?embedMode=view_only_without_ui&moveToViewport=-237376,-276274,41598,9575&embedId=240184675892" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
-                    <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6FSDHLAXAH0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <h2>Aulas</h2>
+    <h3>Mural com todos os conteúdos do Mundo Autodidata.</h3>
 
+    <!-- ================= AULA 01 ================= -->
 
-<div class="aula-quick-save">
-    <select class="aula-activity-select">
-        <option value="Ler">1-Ler</option>
-        <option value="Ler/Escutar">2-Ler & Escutar</option>
-        <option value="Ler/Falar" selected>3-Ler & Falar</option>
-        <option value="Escutar">4-Escutar</option>
-        <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
-        <option value="Escutar/Falar">6-Escutar & Falar</option>
-        <option value="Escrever">7-Escrever com Tradutor</option>
-        <option value="Conversar">8-Conversar</option>
-        <option value="Escrever">9-Escrever sem Tradutor</option>
-        <option value="Ensinar">10-Ensinar</option>
-    </select>
-    
-    <input type="time" step="1" class="aula-time-input" value="00:10:00">
-    
-    <button class="aula-save-btn" onclick="salvarAulaRapido(this)">Salvar</button>
+    <div class="aula-box" style="border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:20px;">
+        
+        <h2>Aula 01</h2>
+
+        <!-- PROGRESSO (visual inicial) -->
+        <div style="background:#eee; height:10px; border-radius:5px; margin-bottom:15px;">
+            <div id="progresso-aula01" style="width:0%; height:100%; background:#27ae60; border-radius:5px;"></div>
+        </div>
+
+        <!-- ================= CONTEÚDO ORIGINAL ================= -->
+
+        <h3>Espanhol</h3>
+
+        <iframe width="768" height="432"
+            src="https://miro.com/app/live-embed/uXjVJcBYmT8=/?embedMode=view_only_without_ui"
+            frameborder="0" allowfullscreen>
+        </iframe>
+
+        <iframe width="560" height="315"
+            src="https://www.youtube-nocookie.com/embed/6FSDHLAXAH0"
+            frameborder="0" allowfullscreen>
+        </iframe>
+
+        <!-- ================= ATIVIDADE ================= -->
+
+        <div class="aula-quick-save" style="margin-top:20px;">
+            
+            <select class="aula-activity-select">
+                <option value="Ler">1-Ler</option>
+                <option value="Ler/Escutar">2-Ler & Escutar</option>
+                <option value="Ler/Falar" selected>3-Ler & Falar</option>
+                <option value="Escutar">4-Escutar</option>
+                <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
+                <option value="Escutar/Falar">6-Escutar & Falar</option>
+                <option value="Escrever">7-Escrever</option>
+                <option value="Conversar">8-Conversar</option>
+                <option value="Ensinar">10-Ensinar</option>
+            </select>
+            
+            <input type="time" step="1" class="aula-time-input" value="00:10:00">
+            
+            <button class="aula-save-btn" onclick="salvarAulaComProgresso(this, 'aula01')">
+                Salvar
+            </button>
+        </div>
+
+    </div>
+
 </div>
 
-                </div>
             </div> 
         </div> 
     </div>    
@@ -1149,6 +1177,46 @@ function salvarAulaRapido(btn) {
     }, 2000);
 }
 
+
+
+// ================= NOVA FUNÇÃO COM PROGRESSO =================
+function salvarAulaComProgresso(btn, aulaId) {
+
+    // mantém seu sistema original
+    salvarAulaRapido(btn);
+
+    // 🔥 CONTROLE DE PROGRESSO
+    let progresso = localStorage.getItem(aulaId) || 0;
+    progresso = parseInt(progresso);
+
+    if (progresso < 100) {
+        progresso += 20; // cada clique aumenta 20%
+    }
+
+    localStorage.setItem(aulaId, progresso);
+
+    atualizarBarra(aulaId, progresso);
+}
+
+
+// ================= ATUALIZAR BARRA =================
+function atualizarBarra(aulaId, valor) {
+    const barra = document.getElementById("progresso-" + aulaId);
+    if (barra) {
+        barra.style.width = valor + "%";
+    }
+}
+
+
+// ================= CARREGAR PROGRESSO =================
+function carregarProgressoAulas() {
+    let progresso = localStorage.getItem("aula01") || 0;
+    atualizarBarra("aula01", progresso);
+}
+
+
+// CHAMA AO INICIAR
+carregarProgressoAulas();
 
 
         // --- CONTROLE DE ACESSO NETLIFY IDENTITY E INÍCIO DO APP ---
