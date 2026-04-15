@@ -6,232 +6,1085 @@
     <title>Idiomas - Mundo Autodidata</title>
 
     <script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#27ae60">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Estudos GB">
+    <link rel="apple-touch-icon" href="icon-192.png">
+
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
     <style>
-        /* --- ESTILOS GERAIS E TABS (Mantidos do seu original) --- */
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f9; margin: 0; padding-bottom: 70px; }
-        .container { max-width: 500px; margin: auto; padding: 20px; }
-        .tab-content { display: none; }
-        .active { display: block; }
-        
-        /* --- ESTILOS DAS AULAS E PROGRESSO --- */
-        .aula-container { border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; overflow: hidden; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .aula-header { padding: 12px 15px; cursor: pointer; background: #f8f9fa; display: flex; flex-direction: column; gap: 6px; }
-        .aula-header:hover { background: #f1f3f5; }
-        
-        .progress-wrapper { width: 100%; height: 6px; background: #eee; border-radius: 3px; overflow: hidden; }
-        .progress-bar { height: 100%; background: #27ae60; width: 0%; transition: width 0.4s ease; }
-        .percent-text { font-size: 12px; color: #27ae60; font-weight: bold; }
+        /* --- ESTILOS DA TELA DE LOGIN --- */
+        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; text-align: center; background-color: #eef2f5; }
+        #login-screen h1 { color: #27ae60; margin-bottom: 10px; }
+        .login-btn { padding: 12px 24px; font-size: 16px; font-weight: bold; cursor: pointer; background-color: #27ae60; color: white; border: none; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background 0.3s; }
+        .login-btn:hover { background-color: #219653; }
+        #app-content { display: none; }
 
-        .aula-content { display: none; padding: 15px; border-top: 1px solid #eee; }
-        .atividade-item { padding: 10px 0; border-bottom: 1px dashed #eee; }
-        .atividade-item:last-child { border-bottom: none; }
+        /* --- ESTILOS GERAIS --- */
+        body {font-family: 'Segoe UI', sans-serif; background-color: #eef2f5; margin: 0; padding: 0; min-height: 100vh;}
+        .container { background-color: white; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 100%; max-width: 1800px; height: 100vh; overflow: hidden; display: flex; flex-direction: row; margin: 0 auto; }
+        
+        /* SIDEBAR */
+        .sidebar { width: 240px; background-color: #fff; border-right: 1px solid #eee; display: flex; flex-direction: column; flex-shrink: 0; z-index: 2; }
+        .logo-area { padding: 25px 20px; text-align: center; border-bottom: 1px solid #f0f0f0; background: #fff; }
+        .logo-area img { max-width: 140px; height: auto; display: block; margin: 0 auto; }
+        .nav-menu { flex: 1; padding-top: 20px; overflow-y: auto; }
+        .nav-btn { display: block; width: 100%; padding: 15px 25px; border: none; background: transparent; cursor: pointer; font-weight: 600; color: #7f8c8d; text-align: left; transition: 0.2s; font-size: 0.95rem; border-left: 4px solid transparent; outline: none; white-space: nowrap; }
+        .nav-btn:hover { background-color: #f8f9fa; color: #27ae60; }
+        .nav-btn.active { background-color: #f0fdf4; color: #27ae60; border-left: 4px solid #27ae60; }
+        .btn-logout { margin-top: 15px; background: #e74c3c; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-logout:hover { background: #c0392b; }
 
-        /* --- FORMULÁRIO COMPACTO DE SALVAMENTO --- */
-        .aula-quick-save { display: flex; gap: 5px; background: #f9f9f9; padding: 6px; border-radius: 6px; align-items: center; margin-top: 8px; }
-        .aula-quick-save select, .aula-quick-save input, .aula-quick-save button { 
-            height: 28px; font-size: 11px; padding: 0 4px; border: 1px solid #ccc; border-radius: 4px; 
+        /* CONTEÚDO */
+        .main-content { flex: 1; padding: 0; overflow-y: auto; background-color: #fff; position: relative; }
+        .tab-content { padding: 2rem 3rem; display: none; animation: fadeIn 0.3s ease-in-out; max-width: 100%; box-sizing: border-box; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { text-align: left; color: #2c3e50; margin-top: 0; margin-bottom: 20px; font-size: 1.5rem; border-bottom: 2px solid #f0f0f0; padding-bottom: 10px; }
+        h3 { font-size: 1rem; color: #555; text-align: left; margin-bottom: 15px; margin-top: 20px; font-weight: 600; }
+
+        /* Componentes UI */
+        .status-bar { background: #ecf0f1; padding: 12px; border-radius: 8px; margin-bottom: 20px; text-align: center; border: 1px solid #bdc3c7; color: #7f8c8d; font-weight: bold; font-size: 0.9rem; display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 5px;}
+        .status-bar.success { background: #d4edda; border-color: #c3e6cb; color: #155724; }
+        .status-val { color: #2c3e50; font-size: 1.1rem; }
+
+        label { font-size: 0.85rem; font-weight: bold; color: #555; display: block; margin-bottom: 5px; }
+        select, input[type="date"], input[type="number"], input[type="text"], textarea { padding: 10px; border-radius: 6px; border: 1px solid #ddd; width: 100%; margin-bottom: 1rem; font-size: 0.95rem; box-sizing: border-box; background: #fafafa; }
+        select:focus, input:focus, textarea:focus { outline: none; border-color: #27ae60; background: white; }
+        
+        .timer-display { font-size: 4rem; font-weight: bold; color: #2c3e50; margin: 2rem 0; text-align: center; font-variant-numeric: tabular-nums; }
+        .btn-group { display: flex; gap: 10px; margin-bottom: 2rem; }
+        button.ctrl-btn { padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; flex: 1; color: white; transition: 0.2s; font-size: 1rem;}
+        .btn-start { background-color: #27ae60; } .btn-start:hover { background-color: #219150; }
+        .btn-pause { background-color: #f39c12; }
+        .btn-stop { background-color: #c0392b; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .manual-form { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
+        .time-row { display: flex; gap: 15px; }
+        .time-group { flex: 1; }
+        .btn-save { width: 100%; background-color: #3498db; color: white; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 1rem; transition: 0.2s; }
+        .btn-save:hover { background-color: #2980b9; }
+        .btn-cancel { width: 100%; background-color: #95a5a6; color: white; padding: 8px; border: none; display: none; margin-top: 10px; border-radius: 6px; cursor: pointer; }
+
+        .history-list { list-style: none; padding: 0; margin: 0; }
+        .history-item { background: #fff; border-bottom: 1px solid #eee; padding: 12px 5px; display: flex; justify-content: space-between; align-items: center; font-size: 0.9rem; transition: 0.2s; }
+        .history-item:hover { background: #fcfcfc; }
+        .history-info { display: flex; flex-direction: column; }
+        .history-date { font-size: 0.75rem; color: #888; margin-top: 2px;}
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 0 5px; opacity: 0.6; transition: 0.2s; }
+        .action-btn:hover { opacity: 1; }
+
+        /* TRADUTOR */
+        .idiomas { display: flex; gap: 8px; margin-bottom: 10px; }
+        .invert { width: auto; padding: 0 12px; background: #007bff; color:white; border-radius:5px; border:none; cursor:pointer;}
+        .invert:hover { background: #0056b3; }
+        .tabela-traducao { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .tabela-traducao th, .tabela-traducao td { border: 1px solid #ccc; padding: 8px; word-break: break-word; }
+        .tabela-traducao tbody tr:hover { background: #f2f2f2; cursor: pointer; }
+        .tabela-traducao td:last-child { text-align: center; cursor: pointer; width: 30px; }
+
+        /* DASHBOARD */
+        .filter-section { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #eee; }
+        .senses-grid { display: flex; justify-content: space-between; margin-bottom: 30px; gap: 15px; flex-wrap: wrap; }
+        .sense-card { flex: 1; min-width: 140px; background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); transition: transform 0.2s; }
+        .sense-card:hover { transform: translateY(-3px); border-color: #27ae60; }
+        .sense-icon { font-size: 2rem; display: block; margin-bottom: 8px; }
+        .sense-label { font-size: 0.75rem; color: #999; text-transform: uppercase; letter-spacing: 1px; display: block; }
+        .sense-time { font-size: 1.2rem; font-weight: bold; color: #2c3e50; margin-top: 5px; display: block; line-height: 1.2;}
+        .chart-wrapper { margin-bottom: 30px; position: relative; height: 300px; width: 100%; min-width: 250px; }
+        .charts-container { display: flex; gap: 20px; flex-wrap: wrap; }
+        .charts-container .chart-wrapper { flex: 1; }
+
+        /* CICLOS */
+        .cycle-active-card { background: #e8f8f5; border: 2px solid #2ecc71; border-radius: 10px; padding: 25px; margin-bottom: 25px; }
+        .cycle-empty-state { text-align: center; padding: 50px 20px; background: #f9f9f9; border-radius: 10px; border: 2px dashed #ddd; color: #777;}
+        .cycle-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(0,0,0,0.05); padding-bottom: 10px; flex-wrap: wrap; gap: 10px; }
+        .cycle-dates { font-size: 0.9rem; color: #555; background: white; padding: 5px 15px; border-radius: 20px; border: 1px solid #ddd; }
+        .cycle-countdown { display: flex; gap: 15px; justify-content: center; margin: 25px 0; flex-wrap: wrap; }
+        .count-box { text-align: center; background: white; padding: 15px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); flex: 1; min-width: 100px; }
+        .count-num { display: block; font-size: 1.5rem; font-weight: bold; color: #27ae60; }
+        .count-lbl { font-size: 0.7rem; color: #777; text-transform: uppercase; font-weight: bold; margin-top: 5px;}
+        .cycle-actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 15px; border-top: 1px solid rgba(0,0,0,0.05); padding-top: 15px; flex-wrap: wrap;}
+        .btn-cycle-start { background: #27ae60; color: white; padding: 15px 30px; font-size: 1rem; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;}
+        .btn-cycle-start:hover { transform: scale(1.02); }
+        .cycles-table { width: 100%; border-collapse: collapse; table-layout: fixed; margin-top: 15px; border: 1px solid #ddd; }
+        .cycles-table thead th { background-color: #34495e; color: white; padding: 15px 10px; font-size: 14px; text-align: center; border: 1px solid #2c3e50; }
+        .cycles-table tbody td { padding: 15px 10px; text-align: center; border: 1px solid #eee; vertical-align: middle; font-size: 13px; color: #333; }
+        .progress-cell { display: flex; flex-direction: column; align-items: center; font-size: 0.75rem; }
+        .progress-val { font-weight: bold; color: #2c3e50; font-size: 0.9rem;}
+        .progress-meta { color: #95a5a6; font-size: 0.7rem; }
+
+        /* FLASHCARDS */
+        .flash-container { display: flex; gap: 20px; flex-direction: column; }
+        .card-stats-row { display: flex; gap: 10px; margin-bottom: 20px; background: #fffde7; padding: 15px; border: 1px solid #f1c40f; border-radius: 8px; flex-wrap: wrap; }
+        .c-stat-box { flex: 1; text-align: center; min-width: 100px; }
+        .c-stat-val { font-weight: bold; font-size: 1.2rem; color: #2c3e50; display: block; }
+        .c-stat-lbl { font-size: 0.75rem; color: #7f8c8d; text-transform: uppercase; }
+        .flash-study { background: #fff; border: 1px solid #eee; border-radius: 10px; padding: 30px; text-align: center; min-height: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: relative;}
+        .flash-manage { background: #f8f9fa; border-radius: 10px; padding: 20px; max-height: 450px; overflow-y: auto; border: 1px solid #eee;}
+        .card-face { font-size: 1.8rem; color: #2c3e50; margin-bottom: 25px; font-weight: bold; word-wrap: break-word; max-width: 100%;}
+        .card-back { font-size: 1.4rem; color: #27ae60; margin-bottom: 30px; display: none; }
+        .card-back.visible { display: block; animation: flipIn 0.3s ease-in; }
+        @keyframes flipIn { from { transform: rotateX(90deg); opacity: 0; } to { transform: rotateX(0); opacity: 1; } }
+        .srs-controls { display: none; gap: 15px; width: 100%; justify-content: center; max-width: 400px; }
+        .srs-controls.visible { display: flex; }
+        .btn-srs-show { background: #3498db; color: white; padding: 12px 40px; border: none; border-radius: 30px; cursor: pointer; font-size: 1rem; font-weight: bold; box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3); }
+        .btn-srs-fail { background: #e74c3c; color: white; flex:1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-srs-pass { background: #27ae60; color: white; flex:1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .srs-stats { position: absolute; top: 15px; right: 15px; font-size: 0.85rem; color: #999; background: #f0f0f0; padding: 4px 8px; border-radius: 10px;}
+        .word-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-top: 10px; background: white; min-width: 400px;}
+        .word-table th { background: #ecf0f1; padding: 8px; text-align: left; color: #555;}
+        .word-table td { border-bottom: 1px solid #eee; padding: 8px; }
+
+        /* CONFIG */
+        .config-section { margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 30px; }
+        .week-selector { display: flex; gap: 10px; justify-content: left; margin: 15px 0; flex-wrap: wrap;}
+        .day-circle { width: 40px; height: 40px; border-radius: 50%; background: #eee; color: #777; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; transition: 0.3s; user-select: none; font-size: 0.8rem; border: 2px solid transparent; }
+        .day-circle.selected { background: #27ae60; color: white; border-color: #2ecc71; box-shadow: 0 2px 8px rgba(39, 174, 96, 0.4); }
+
+        .level-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .level-table th, .level-table td { border: 1px solid #e0e0e0; padding: 10px 5px; text-align: center; vertical-align: middle; }
+        .level-table th { background-color: #f8f9fa; color: #333; font-size: 14px; }
+        .level-table th:nth-child(1) { width: 70px; }
+        .level-table th:last-child { width: 80px; }
+        .level-table input { width: 90%; padding: 6px; border: 1px solid #ddd; border-radius: 4px; text-align: center; font-size: 14px; }
+        .level-badge { font-weight: bold; color: white; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; display: inline-block; width: 25px; text-align: center;}
+        .lvl-c2 { background-color: #2c3e50; } .lvl-c1 { background-color: #34495e; }
+        .lvl-b2 { background-color: #e67e22; } .lvl-b1 { background-color: #f39c12; }
+        .lvl-a2 { background-color: #27ae60; } .lvl-a1 { background-color: #2ecc71; }
+        tr.current-level-row { background-color: #fffde7; }
+        tr.current-level-row td { border-top: 2px solid #f1c40f; border-bottom: 2px solid #f1c40f; font-weight: bold;}
+        .table-title { display: block; margin-bottom: 10px; font-weight: bold; color: #34495e; font-size: 0.95rem; }
+
+        /* SOBRE */
+        .about-centered { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px dashed #eee; }
+        .about-img { max-width: 400px; height: auto; margin: 20px auto; display: block; }
+        .about-txt-top { font-size: 1.1rem; color: #2c3e50; font-weight: bold; margin-bottom: 10px; }
+        .about-txt-bottom { font-size: 1rem; color: #7f8c8d; margin-top: 10px; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bbb; }
+
+        /* Media Queries */
+        @media (max-width: 850px) {
+            body { padding: 0; }
+            .container { flex-direction: column; height: 100vh; border-radius: 0; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #eee; flex-direction: row; align-items: center; padding: 5px 0; overflow-x: auto; }
+            .logo-area { padding: 10px; border-bottom: none; flex-shrink: 0; display: flex; align-items: center; gap: 15px; }
+            .logo-area img { max-height: 40px; width: auto; margin: 0; }
+            .btn-logout { margin-top: 0; width: auto; }
+            .nav-menu { display: flex; padding: 0; align-items: center; }
+            .nav-btn { padding: 15px; border-left: none; border-bottom: 3px solid transparent; width: auto; white-space: nowrap; }
+            .nav-btn.active { border-left: none; border-bottom: 3px solid #27ae60; background: transparent; }
+            .tab-content { padding: 1.5rem 1rem; padding-bottom: 80px; }
+            .config-section > div { flex-direction: column; }
+            .timer-display { font-size: 3rem; }
         }
-        .aula-activity-select { flex: 2; }
-        .aula-time-input { width: 80px; text-align: center; }
-        .aula-save-btn { background: #3498db; color: white; border: none; cursor: pointer; font-weight: bold; flex: 1; transition: 0.2s; }
-        
-        /* Estado Concluído */
-        .btn-concluido { background: #27ae60 !important; cursor: default !important; }
-
-        /* --- NAVEGAÇÃO (Mantida do original) --- */
-        .nav-bar { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #ddd; }
-        .nav-item { cursor: pointer; font-size: 12px; color: #7f8c8d; text-align: center; }
-        .nav-item.active-nav { color: #27ae60; font-weight: bold; }
+        @media (max-width: 480px) {
+            .count-box { min-width: 45%; padding: 10px; }
+            .sense-card { min-width: 100%; }
+            .charts-container { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
 
     <div id="login-screen">
         <h1>Mundo Autodidata</h1>
-        <button onclick="netlifyIdentity.open()" style="padding:15px 30px; background:#27ae60; color:white; border:none; border-radius:5px; cursor:pointer;">Entrar / Cadastrar</button>
+        <p>Acesso restrito. Faça login para continuar.</p>
+        <button class="login-btn" onclick="netlifyIdentity.open()">Entrar na Plataforma</button>
     </div>
 
-    <div id="app-content" style="display:none;">
+    <div id="app-content">
         <div class="container">
-            
-            <div id="tab-dashboard" class="tab-content">
-                <h2>Dashboard</h2>
-                <canvas id="mainChart"></canvas>
+            <div class="sidebar">
+                <div class="logo-area">
+                    <span style="display:block; margin-top:5px; font-weight:bold; color:#555;">Idiomas</span>
+                    <img src="logo.png" alt="x" width="50">
+                    <span style="display:block; margin-top:5px; font-weight:bold; color:#555;">Mundo Autodidata</span>
+                    <button class="btn-logout" onclick="netlifyIdentity.logout()">🚪 Sair</button>
+                </div>
+                <div class="nav-menu">
+                    <button class="nav-btn active" onclick="switchTab('timer')">⏱️ Cronômetro</button>
+                    <button class="nav-btn" onclick="switchTab('manual')">📝 Inserir Manual</button>
+                    <button class="nav-btn" onclick="switchTab('tradutor')">🌐 Tradutor</button>
+                    <button class="nav-btn" onclick="switchTab('srs')">🧠 Flashcards</button>
+                    <button class="nav-btn" onclick="switchTab('cycles')">🔄 Ciclos de Estudo</button>
+                    <button class="nav-btn" onclick="switchTab('stats')">📊 Dashboard</button>
+                    <button class="nav-btn" onclick="switchTab('aulas')">▶️ Aulas</button>
+                    <button class="nav-btn" onclick="switchTab('config')">⚙️ Configurações</button>
+                    <button class="nav-btn" onclick="switchTab('about')">ℹ️ Sobre</button>
+                </div>
             </div>
 
-            <div id="tab-aulas" class="tab-content active">
-                <h2>Meus Cursos</h2>
+            <div class="main-content">
                 
-                <div class="aula-container" id="aula1">
-                    <div class="aula-header" onclick="toggleAula('aula1')">
-                        <div style="display:flex; justify-content:space-between; align-items: center;">
-                            <span style="font-weight:bold; color: #2c3e50;">Aula 01: Primeiros Passos</span>
-                            <span class="percent-text" id="perc-aula1">0%</span>
+                <div id="tab-timer" class="tab-content active">
+                    <h2>Estudo Agora</h2>
+                    <div id="daily-status-timer" class="status-bar"><span>Carregando...</span></div>
+                    <div style="max-width: 600px; margin: 0 auto;">
+                        <label>O que vamos praticar?</label>
+                        <select id="timerActivity">
+                            <option value="Ler">1-Ler</option>
+                            <option value="Ler/Escutar">2-Ler & Escutar</option>
+                            <option value="Ler/Falar">3-Ler & Falar</option>
+                            <option value="Escutar">4-Escutar</option>
+                            <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
+                            <option value="Escutar/Falar">6-Escutar & Falar</option>
+                            <option value="Escrever">7-Escrever com Tradutor</option>
+                            <option value="Conversar">8-Conversar</option>
+                            <option value="Escrever">9-Escrever sem Tradutor</option>
+                            <option value="Ensinar">10-Ensinar</option>
+                        </select>
+                        <div class="timer-display" id="timer">00:00:00</div>
+                        <div class="btn-group">
+                            <button class="ctrl-btn btn-start" onclick="startTimer()" id="btnStart">Iniciar</button>
+                            <button class="ctrl-btn btn-pause" onclick="pauseTimer()" id="btnPause" disabled>Pausar</button>
+                            <button class="ctrl-btn btn-stop" onclick="stopTimer()" id="btnStop" disabled>Parar & Salvar</button>
                         </div>
-                        <div class="progress-wrapper">
-                            <div class="progress-bar" id="bar-aula1"></div>
+                    </div>
+                    <h3 style="border-top: 1px solid #eee; padding-top: 15px;">Realizado Hoje</h3>
+                    <ul class="history-list" id="timer-list"></ul>
+                </div>
+
+                <div id="tab-manual" class="tab-content">
+                    <h2>Inserir / Editar Registro</h2>
+                    <div id="daily-status-manual" class="status-bar"><span>Selecione uma data</span></div>
+                    <div class="manual-form">
+                        <label>Data da Atividade:</label>
+                        <input type="date" id="manualDate">
+                        <label>Tipo de Atividade:</label>
+                        <select id="manualActivity">
+                            <option value="Ler">1-Ler</option>
+                            <option value="Ler/Escutar">2-Ler & Escutar</option>
+                            <option value="Ler/Falar">3-Ler & Falar</option>
+                            <option value="Escutar">4-Escutar</option>
+                            <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
+                            <option value="Escutar/Falar">6-Escutar & Falar</option>
+                            <option value="Escrever">7-Escrever com Tradutor</option>
+                            <option value="Conversar">8-Conversar</option>
+                            <option value="Escrever">9-Escrever sem Tradutor</option>
+                            <option value="Ensinar">10-Ensinar</option>
+                        </select>
+                        <div class="time-row">
+                            <div class="time-group"><label>Horas:</label><input type="number" id="manualHours" min="0" value="0"></div>
+                            <div class="time-group"><label>Minutos:</label><input type="number" id="manualMinutes" min="0" max="59" value="0"></div>
                         </div>
+                        <button class="btn-save" onclick="handleManualSave()" id="btnManualSave">Adicionar Registro</button>
+                        <button class="btn-cancel" onclick="cancelEdit()" id="btnCancelEdit">Cancelar Edição</button>
+                    </div>
+                    <h3>Histórico da Data Selecionada</h3>
+                    <ul class="history-list" id="manual-list"></ul>
+                </div>
+
+                <div id="tab-tradutor" class="tab-content">
+                    <div>
+                        <h2>Tradutor (Flashcards)</h2>
+                        <div class="idiomas">
+                            <select id="idiomaOrigem">
+                                <option value="pt">Português</option>
+                                <option value="en">Inglês</option>
+                                <option value="es">Espanhol</option>
+                                <option value="fr">Francês</option>
+                                <option value="de">Alemão</option>
+                                <option value="it">Italiano</option>
+                                <option value="ru">Russo</option>
+                                <option value="zh">Chinês</option>
+                                <option value="ja">Japonês</option>
+                                <option value="ar">Árabe</option>
+                            </select>
+                            <button class="invert" onclick="inverterIdiomas()">🔁</button>
+                            <select id="idiomaDestino">
+                                <option value="en">Inglês</option>
+                                <option value="pt">Português</option>
+                                <option value="es">Espanhol</option>
+                                <option value="fr">Francês</option>
+                                <option value="de">Alemão</option>
+                                <option value="it">Italiano</option>
+                                <option value="ru">Russo</option>
+                                <option value="zh">Chinês</option>
+                                <option value="ja">Japonês</option>
+                                <option value="ar">Árabe</option>
+                            </select>
+                        </div>
+                        <textarea id="textoOriginal" placeholder="Digite o texto..."></textarea>
+                        <textarea id="textoTraduzido" placeholder="A tradução aparecerá aqui..." readonly style="background:#eef2f5;"></textarea>
+                        <button class="btn-save" style="margin-bottom: 10px;" onclick="salvarTraducao()">Salvar</button>
+                        <input type="text" id="busca" placeholder="Buscar no histórico..." />
+                        
+                        <table class="tabela-traducao">
+                            <thead><tr><th>Origem</th><th>Tradução</th><th>❌</th></tr></thead>
+                            <tbody id="tabelaTraducoes"></tbody>
+                        </table>
+                    </div>
+                </div>	
+
+                <div id="tab-srs" class="tab-content">
+                    <h2>Memorização Espaçada (Flashcards)</h2>
+                    <div class="flash-container">
+                        <div class="flash-study" id="study-area">
+                            <div class="srs-stats" id="srs-count">Pendentes: 0</div>
+                            <div id="card-content">
+                                <div class="card-face" id="card-front">Sem cartões para hoje!</div>
+                                <div class="card-back" id="card-back">Adicione novos ou volte amanhã.</div>
+                            </div>
+                            <button class="btn-srs-show" id="btn-show-answer" onclick="showAnswer()" style="display:none;">Ver Resposta</button>
+                            <div class="srs-controls" id="srs-controls">
+                                <button class="btn-srs-fail" onclick="rateCard(false)">Errei (Reset)</button>
+                                <button class="btn-srs-pass" onclick="rateCard(true)">Acertei (Next)</button>
+                            </div>
+                        </div>
+
+                        <div class="flash-manage">
+                            <div id="card-goal-stats" class="card-stats-row" style="display:none;">
+                                <div class="c-stat-box"><span class="c-stat-val" id="cg-today">0</span><span class="c-stat-lbl">Pend. Hoje</span></div>
+                                <div class="c-stat-box"><span class="c-stat-val" id="cg-pending-total">0</span><span class="c-stat-lbl">Pend. Totais</span></div>
+                                <div class="c-stat-box"><span class="c-stat-val" id="cg-added-cycle" style="color:#27ae60">0</span><span class="c-stat-lbl">Add. no Ciclo</span></div>
+                                <div class="c-stat-box"><span class="c-stat-val" id="cg-cycle-total">0</span><span class="c-stat-lbl">Meta Ciclo</span></div>
+                                <div class="c-stat-box"><span class="c-stat-val" id="cg-percent">0%</span><span class="c-stat-lbl">Progresso</span></div>
+                            </div>
+
+                            <h3>Adicionar Novo Card</h3>
+                            <div style="display:flex; gap:10px; margin-bottom:10px;">
+                                <input type="text" id="newFront" placeholder="Palavra / Frase (Frente)" style="margin:0;">
+                                <input type="text" id="newBack" placeholder="Tradução / Significado (Verso)" style="margin:0;">
+                            </div>
+                            <button class="btn-save" onclick="addFlashcard()" style="padding: 8px;">Salvar Cartão</button>
+                            
+                            <button onclick="toggleImportCSV()" style="margin-top:10px; background:#f39c12; width:100%; border:none; color:white; padding:8px; border-radius:6px; cursor:pointer;">📥 Importar Cards</button>
+                            <div id="csvImportArea" style="display:none; margin-top:10px;">
+                                <textarea id="csvInput" placeholder="Cole aqui: Frente,Verso (uma por linha)" style="width:100%; height:100px; padding:5px; margin-bottom:5px;"></textarea>
+                                <button onclick="processCSV()" style="width:100%; background:#27ae60; color:white; border:none; padding:8px; border-radius:6px; cursor:pointer;">Processar Importação</button>
+                            </div>
+
+                            <h3 style="margin-top:20px;">Banco de Palavras</h3>
+                            <input type="text" id="searchFlashcard" placeholder="🔍 Pesquisar cartão..." oninput="renderCardList()" style="margin-bottom:10px;">
+                            
+                            <div style="overflow-y:auto;">
+                                <table class="word-table">
+                                    <thead><tr><th>Frente</th><th>Verso</th><th>Nível</th><th>Ação</th></tr></thead>
+                                    <tbody id="flashcards-list"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-cycles" class="tab-content">
+                    <h2>Gestão de Ciclos</h2>
+                    <div id="cycle-active-area"></div>
+                    <h3>Histórico de Ciclos</h3>
+                    <div style="overflow-x:auto;">
+                        <table class="cycles-table">
+                            <thead><tr><th>Período</th><th>Nível</th><th>Ler</th><th>Escutar</th><th>Falar</th><th>Escrever</th><th>Status</th></tr></thead>
+                            <tbody id="cyclesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab-stats" class="tab-content">
+                    <h2>Dashboard Geral</h2>
+                    <div class="filter-section">
+                        <label>Filtrar Período:</label>
+                        <select id="filterRange" onchange="toggleCustomDate()">
+                            <option value="all">Todo o Histórico</option>
+                            <option value="week">Semana Atual</option>
+                            <option value="today">Hoje</option>
+                            <option value="yesterday">Ontem</option>
+                            <option value="custom">Escolher Datas...</option>
+                        </select>
+                        <div id="customDates" class="date-inputs" style="display:none; gap:10px; margin-top:10px;">
+                            <input type="date" id="dateStart" style="display:inline-block; width:48%">
+                            <input type="date" id="dateEnd" style="display:inline-block; width:48%">
+                        </div>
+                        <button onclick="applyFilter()" style="width:100%; background:#3498db; color:white; border:none; padding:10px; border-radius:5px; cursor:pointer; margin-top:10px; font-weight:bold;">Aplicar Filtro</button>
+                    </div>
+
+                    <div class="senses-grid">
+                        <div class="sense-card"><span class="sense-icon">📖</span><span class="sense-label">Ler</span><span class="sense-time" id="time-ler">00h 00m</span></div>
+                        <div class="sense-card"><span class="sense-icon">🎧</span><span class="sense-label">Escutar</span><span class="sense-time" id="time-escutar">00h 00m</span></div>
+                        <div class="sense-card"><span class="sense-icon">🗣️</span><span class="sense-label">Falar</span><span class="sense-time" id="time-falar">00h 00m</span></div>
+                        <div class="sense-card"><span class="sense-icon">✍️</span><span class="sense-label">Escrever</span><span class="sense-time" id="time-escrever">00h 00m</span></div>
                     </div>
                     
-                    <div class="aula-content">
-                        <div class="atividade-item">
-                            <label style="font-size: 13px; font-weight: 500;">1. Vídeo: Estrutura do Idioma</label>
-                            <div style="margin: 10px 0;">
-                                <iframe width="100%" height="200" src="https://www.youtube.com/embed/6FSDHLAXAH0" frameborder="0" allowfullscreen style="border-radius:8px;"></iframe>
+                    <div class="charts-container">
+                        <div class="chart-wrapper"><h3>Radar de Habilidades</h3><canvas id="radarChart"></canvas></div>
+                        <div class="chart-wrapper"><h3>Ranking de Atividades</h3><canvas id="barActivityChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div id="tab-config" class="tab-content">
+                    <h2>Planejamento & Níveis</h2>
+                    <div class="config-section">
+                        <div style="display: flex; gap: 20px;">
+                            <div style="flex:1">
+                                <label>Meta Diária (Horas):</label>
+                                <input type="number" id="dailyGoal" placeholder="Ex: 1" step="0.5" onchange="saveConfigAndRecalc()">
                             </div>
-                            <div class="aula-quick-save" data-id="a1_at1">
-                                <select class="aula-activity-select">
-                                    <option value="Ler/Falar" selected>3-Ler & Falar</option>
-                                    <option value="Escutar">4-Escutar</option>
+                            <div style="flex:1">
+                                <label>Meu Nível Atual:</label>
+                                <select id="currentLevel" onchange="saveConfigAndRecalc()">
+                                    <option value="A1">A1 - Iniciante</option>
+                                    <option value="A2">A2 - Básico</option>
+                                    <option value="B1">B1 - Intermediário</option>
+                                    <option value="B2">B2 - Independente</option>
+                                    <option value="C1">C1 - Avançado</option>
+                                    <option value="C2">C2 - Proficiente</option>
                                 </select>
-                                <input type="time" step="1" class="aula-time-input" value="00:10:00">
-                                <button class="aula-save-btn" onclick="concluirAtividade(this, 'a1_at1', 'aula1')">Salvar</button>
                             </div>
                         </div>
 
-                        <div class="atividade-item">
-                            <label style="font-size: 13px; font-weight: 500;">2. Prática de Áudio</label>
-                            <div class="aula-quick-save" data-id="a1_at2">
-                                <select class="aula-activity-select">
-                                    <option value="Escutar/Falar" selected>6-Escutar & Falar</option>
-                                </select>
-                                <input type="time" step="1" class="aula-time-input" value="00:05:00">
-                                <button class="aula-save-btn" onclick="concluirAtividade(this, 'a1_at2', 'aula1')">Salvar</button>
+                        <div style="margin-top: 20px; background: #fffde7; padding: 15px; border-radius: 8px; border: 1px solid #ffe58f; max-width: fit-content;">
+                            <label style="display: flex; align-items: center; cursor: pointer; gap: 10px; width: fit-content;">
+                                <input type="checkbox" id="checkCardGoal" onchange="toggleCardGoalInput()" style="width: auto; margin: 0;"> 
+                                <span style="font-weight: bold; color: #333; white-space: nowrap;">Definir Meta de Palavras/Frases por Dia</span>
+                            </label>
+                            
+                            <div id="divCardGoalInput" style="display:none; margin-top: 12px; border-top: 1px solid #f0e68c; padding-top: 10px;">
+                                <label style="display: block; margin-bottom: 5px; font-size: 13px;">Quantidade por Dia:</label>
+                                <input type="number" id="inputCardGoal" placeholder="Ex: 5" style="width: 80px; padding: 6px; border: 1px solid #ccc; border-radius: 4px;" onchange="saveConfigAndRecalc()">
                             </div>
+                        </div>
+
+                        <label style="margin-top:15px;">Dias de Estudo:</label>
+                        <div class="week-selector">
+                            <div class="day-circle" onclick="toggleDay(this, 0)">Dom</div>
+                            <div class="day-circle" onclick="toggleDay(this, 1)">Seg</div>
+                            <div class="day-circle" onclick="toggleDay(this, 2)">Ter</div>
+                            <div class="day-circle" onclick="toggleDay(this, 3)">Qua</div>
+                            <div class="day-circle" onclick="toggleDay(this, 4)">Qui</div>
+                            <div class="day-circle" onclick="toggleDay(this, 5)">Sex</div>
+                            <div class="day-circle" onclick="toggleDay(this, 6)">Sáb</div>
+                        </div>
+                    </div>
+
+                    <div class="config-section" style="border:none;">
+                        <span class="table-title">Distribuição Percentual (%)</span>
+                        <div style="overflow-x:auto">
+                            <table class="level-table">
+                                <thead><tr><th>Nível</th><th>Ler</th><th>Escutar</th><th>Falar</th><th>Escrever</th><th>Total</th></tr></thead>
+                                <tbody id="levelTableBody"></tbody>
+                            </table>
+                        </div>
+                        <span class="table-title" style="margin-top:30px; color:#27ae60;">Planejamento em Horas (Ciclo 12 Semanas)</span>
+                        <div style="overflow-x:auto">
+                            <table class="level-table">
+                                <thead><tr><th>Nível</th><th>Ler</th><th>Escutar</th><th>Falar</th><th>Escrever</th></tr></thead>
+                                <tbody id="hoursTableBody"></tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
 
-                <div class="aula-container" id="aula2">
-                    <div class="aula-header" onclick="toggleAula('aula2')">
-                        <div style="display:flex; justify-content:space-between;">
-                            <span style="font-weight:bold;">Aula 02: Vocabulário Base</span>
-                            <span class="percent-text" id="perc-aula2">0%</span>
-                        </div>
-                        <div class="progress-wrapper"><div class="progress-bar" id="bar-aula2"></div></div>
-                    </div>
-                    <div class="aula-content">
-                        <p style="font-size:12px; color:gray;">Conteúdo em breve...</p>
-                    </div>
+                <div id="tab-about" class="tab-content">
+                    <h2>Sobre o Aplicativo</h2>
+                    <h3>O aplicativo utiliza o Sistema M.A. - um método baseado em ciclos e que registra tudo que tem aprendido para ter mais clareza e constância nos estudos, ou seja, saber para onde e como ir.</h3>
+                    <h2>1° Entenda seu Nível no Idioma</h2>
+                    <p> - <b>Como começar?</b> Descubra seu nível no idioma através de testes online (Gratuitos ou Pagos).</p>
+                    <p> - Os <b>6 níveis até fluência</b>: Iniciante <b>(A1)</b>, Básico <b>(A2)</b>, Intermediário <b>(B1)</b>, Intermediário/Avançado <b>(B2)</b>, Avançado <b>(C1)</b>, Proficiente <b>(C2)</b>.</p>
+                    <p> - Cada nível tem pesos diferentes nos 4 sentidos: <b>Ler, Escutar, Falar e Escrever.</b></p>
+                    <img src="Nível de Idiomas.png" alt="Logo Central" width="500">
+                    <p></p>
+                    <h2>2° Utilize a Pirâmide de Aprendizagem M.A.</h2>
+                    <p> - <b>Como estudar?</b> Através de categorias que abrangem os 4 sentidos. Adaptado da Pirâmide de William Glasser para melhorar a retenção dos estudos em idiomas.</p>
+                    <p> - <b>10 Categorias de estudos</b> contemplando 1 sentido ou mais ao mesmo tempo.</p>
+                    <p> - <b>Exemplo:</b> assistir a um vídeo com legenda você vai ativar os sentidos da visão e audição.</p>
+                    <img src="Pirâmide M.A..png" alt="Logo Central" class="about-img">
+                    <h2>3° Estude Baseado em Ciclos</h2>
+                    <p> - <b>Como estruturar?</b> Seguindo a estratégia do livro "1 Ano em 12 Semanas": Focar em ciclos de 12 semanas (3 meses) invés de 12 meses (1 ano).</p>
+                    <p> - <b>Objetivo:</b> Estudar baseado em ciclos menores para extrair o máximo de resultados e ajustar rotas.</p>
+                    <p> - <b>Terminou um ciclo?</b> Refaça os testes online para ver se seu nível no idioma.</p>
+                    <p> - <b>Avançou de nível?</b> Parabéns!🎉 Ajuste os pesos dos sentidos (1° etapa) e reinicie um novo ciclo.</p> 		    
+                    <p> - <b>Não avançou de nível?</b> Não tem problema, importante é persistir 💪 Veja no que pode melhorar e inicie um novo ciclo.</p>
+                    <img src="1 Ano em 12 Semanas.png" alt="Logo Central" class="about-img" width="200">
+                    <div class="about-centered">
+                         <div class="about-txt-bottom">© 2026 App - Mundo Autodidata - Todos os direitos reservados.</div>                   
+                    </div>	
                 </div>
 
-            </div>
-        </div>
+                <div id="tab-aulas" class="tab-content">
+                    <h2>Aulas</h2>
+                    <h3>Mural com todos os conteúdos do Mundo Autodidata. Comodidade sem precisar sair do App.</h3>
+                    <h2>Espanhol</h2>
+                    <iframe width="768" height="432" src="https://miro.com/app/live-embed/uXjVJcBYmT8=/?embedMode=view_only_without_ui&moveToViewport=-237376,-276274,41598,9575&embedId=240184675892" frameborder="0" scrolling="no" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+                    <iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/6FSDHLAXAH0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+                </div>
+            </div> 
+        </div> 
+    </div>    
 
-        <nav class="nav-bar">
-            <div class="nav-item" onclick="switchTab('dashboard')">📊<br>Painel</div>
-            <div class="nav-item active-nav" onclick="switchTab('aulas')">📚<br>Aulas</div>
-        </nav>
-    </div>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, setDoc, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdSB-U9KYOENSQLlV1_CJapuQgMgXWiIU",
+            authDomain: "idiomas-mundo-autodidata.firebaseapp.com",
+            projectId: "idiomas-mundo-autodidata",
+            storageBucket: "idiomas-mundo-autodidata.firebasestorage.app",
+            messagingSenderId: "362445102611",
+            appId: "1:362445102611:web:b5faf0d0006e29f1f2a9e6",
+            measurementId: "G-QVPZ4B2HVT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // Expõe globalmente para o restante do código
+        window.firebase = { db, doc, setDoc, getDoc };
+    </script>
 
     <script>
-        let globalUserId = null;
-        let userData = { concluidas: [] };
-
-        // --- INICIALIZAÇÃO NETLIFY ---
-        netlifyIdentity.on("init", user => {
-            if (!user) {
-                document.getElementById('login-screen').style.display = 'flex';
-            } else {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('app-content').style.display = 'block';
-                iniciarAppComUsuario(user);
-            }
-        });
-
-        async function iniciarAppComUsuario(user) {
-            globalUserId = user.id;
-            await loadData();
+        // --- REGISTRO DO SERVICE WORKER (PWA) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js').catch(err => console.log('Falha SW:', err));
+            });
         }
 
-        // --- CARREGAR DADOS DO FIREBASE ---
+        // --- 1. DADOS GLOBAIS E SINCRONIZAÇÃO NUVEM ---
+        let globalUserId = null; // Guardará o ID do usuário após o login
+        let studyData = [], cyclesData = [], flashcards = [], historicoTraducoes = [];
+        let configData = {
+            goal: 1.0, days: [1,2,3,4,5], currentLevel: 'A1',
+            cardGoalEnabled: false, cardGoalQty: 0,
+            levels: { 'C2': [25,25,25,25], 'C1': [15,20,35,30], 'B2': [20,20,30,30], 'B1': [20,30,30,20], 'A2': [30,30,20,20], 'A1': [35,35,15,15] }
+        };
+        const levelsOrder = ['C2', 'C1', 'B2', 'B1', 'A2', 'A1'];
+        const senseMap = { "Ler": ["ler"], "Escutar": ["escutar"], "Escrever": ["escrever"], "Ler/Escutar": ["ler", "escutar"], "Ler/Escutar/Falar": ["ler", "escutar", "falar"], "Ler/Falar": ["ler", "falar"], "Escutar/Falar": ["escutar", "falar"], "Escrever com Tradutor": ["escrever"], "Conversar": ["escutar", "falar"], "Escrever sem Tradutor": ["escrever"], "Ensinar": ["falar"] };
+
+        // BUSCA DA NUVEM (FIREBASE)
         async function loadData() {
-            if (!window.firebase || !globalUserId) return;
-            const docRef = window.firebase.doc(window.firebase.db, "usuarios", globalUserId);
-            const docSnap = await window.firebase.getDoc(docRef);
+            if (!globalUserId || !window.firebase) return;
+            try {
+                const docRef = window.firebase.doc(window.firebase.db, "usuarios", globalUserId);
+                const docSnap = await window.firebase.getDoc(docRef);
 
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                window.allStudies = data.estudos || [];
-                userData.concluidas = data.concluidas || []; // Carrega as IDs das aulas feitas
-                atualizarInterfaceConclusao();
-            }
-        }
-
-        // --- LÓGICA DAS AULAS ---
-        function toggleAula(id) {
-            const content = document.querySelector(`#${id} .aula-content`);
-            const isVisible = content.style.display === 'block';
-            content.style.display = isVisible ? 'none' : 'block';
-        }
-
-        async function concluirAtividade(btn, activityId, aulaContainerId) {
-            if (btn.classList.contains('btn-concluido')) return;
-
-            const box = btn.closest('.aula-quick-save');
-            const act = box.querySelector('.aula-activity-select').value;
-            const [h, m, s] = box.querySelector('.aula-time-input').value.split(':');
-            const totalSec = (parseInt(h)*3600) + (parseInt(m)*60) + (parseInt(s)||0);
-
-            // 1. Salva o tempo no histórico geral
-            if (typeof saveStudy === "function") {
-                await saveStudy(act, totalSec, new Date());
-            }
-
-            // 2. Adiciona ao array de conclusões se não existir
-            if (!userData.concluidas.includes(activityId)) {
-                userData.concluidas.push(activityId);
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.studyData) studyData = data.studyData;
+                    if (data.configData) configData = data.configData;
+                    if (data.cyclesData) cyclesData = data.cyclesData;
+                    if (data.flashcards) flashcards = data.flashcards;
+                    if (data.historicoTraducoes) historicoTraducoes = data.historicoTraducoes;
+                }
                 
-                // 3. Salva no Firebase
-                try {
-                    await window.firebase.updateDoc(
-                        window.firebase.doc(window.firebase.db, "usuarios", globalUserId),
-                        { concluidas: userData.concluidas }
-                    );
-                } catch (e) { console.error("Erro ao salvar progresso:", e); }
+                initConfigUI();
+                renderLists();
+                renderTabelaTraducoes();
+                console.log("✅ Dados carregados da nuvem.");
+            } catch (error) {
+                console.error("❌ Erro ao carregar dados:", error);
             }
-
-            atualizarInterfaceConclusao();
         }
 
-        function atualizarInterfaceConclusao() {
-            const concluidas = userData.concluidas || [];
+        // SALVA NA NUVEM (FIREBASE)
+        async function saveAll() {
+            if (!globalUserId || !window.firebase) return;
+            try {
+                const dadosParaSalvar = {
+                    studyData: studyData,
+                    configData: configData,
+                    cyclesData: cyclesData,
+                    flashcards: flashcards,
+                    historicoTraducoes: historicoTraducoes
+                };
+                
+                // Opção merge: true garante que os dados do perfil (email, nome) não sejam apagados
+                await window.firebase.setDoc(window.firebase.doc(window.firebase.db, "usuarios", globalUserId), dadosParaSalvar, { merge: true });
+                console.log("✅ Dados sincronizados na nuvem.");
+            } catch (error) {
+                console.error("❌ Erro ao salvar dados:", error);
+            }
+        }
 
-            // Atualiza botões
-            document.querySelectorAll('.aula-quick-save').forEach(div => {
-                const id = div.getAttribute('data-id');
-                const btn = div.querySelector('.aula-save-btn');
-                if (concluidas.includes(id)) {
-                    btn.textContent = "✓ Salvo";
-                    btn.classList.add('btn-concluido');
+
+        // --- 2. UTILITÁRIOS ---
+        function getRawDateStr(d) { return d.toLocaleDateString('sv-SE', { timeZone: 'America/Sao_Paulo' }); }
+        function formatDateBR(raw) { if(!raw) return ''; const parts = raw.split('-'); return `${parts[2]}/${parts[1]}/${parts[0].slice(2)}`; }
+        function formatTimeInfo(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=Math.floor(s%60); return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${sec.toString().padStart(2,'0')}`; }
+        function formatHM(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return `${h}h ${m}m`; }
+
+
+        // --- 3. STATUS DIÁRIO ---
+        function updateDailyStats(dateStr = null) {
+            const targetDate = dateStr || getRawDateStr(new Date());
+            const total = studyData.filter(d => d.rawDate === targetDate).reduce((a,c) => a+c.duration, 0);
+            const goal = configData.goal * 3600; 
+            const rem = Math.max(0, goal - total);
+            const displayDate = targetDate.split('-').reverse().join('/');
+            
+            let html = '', cls = '';
+            if (total >= goal && goal > 0) { html = `<div>✅ Meta de ${displayDate} batida! (${formatTimeInfo(total)})</div>`; cls = 'success'; } 
+            else { html = `<div>Em ${displayDate}: <span class="status-val">${formatTimeInfo(total)}</span></div><div>Falta: <span class="status-val">${formatTimeInfo(rem)}</span></div>`; }
+            if(!dateStr) { const elTimer = document.getElementById('daily-status-timer'); elTimer.innerHTML = html; elTimer.className = 'status-bar ' + cls; } 
+            else { const elManual = document.getElementById('daily-status-manual'); elManual.innerHTML = html; elManual.className = 'status-bar ' + cls; }
+        }
+
+        // --- 4. TRADUTOR ---
+        const txtOriginal = document.getElementById("textoOriginal");
+        const txtTraduzido = document.getElementById("textoTraduzido");
+        const origemSel = document.getElementById("idiomaOrigem");
+        const destinoSel = document.getElementById("idiomaDestino");
+        const tabTraducoes = document.getElementById("tabelaTraducoes");
+        const inputBusca = document.getElementById("busca");
+        let timerTraducao;
+
+        [txtOriginal, origemSel, destinoSel].forEach(el => { el.addEventListener("input", traduzirDelay); el.addEventListener("change", traduzirDelay); });
+        inputBusca.addEventListener("input", renderTabelaTraducoes);
+
+        function traduzirDelay() { clearTimeout(timerTraducao); timerTraducao = setTimeout(traduzir, 1000); }
+
+        async function traduzir() {
+            const texto = txtOriginal.value.trim();
+            if (!texto) { txtTraduzido.value = ""; txtTraduzido.placeholder = "A tradução aparecerá aqui..."; return; }
+            txtTraduzido.placeholder = "Traduzindo... Aguarde.";
+            const chunks = texto.match(/[\s\S]{1,450}/g) || [];
+            const langPair = `${origemSel.value}|${destinoSel.value}`;
+            try {
+                const promessas = chunks.map(async (chunk) => {
+                    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(chunk)}&langpair=${langPair}`;
+                    const res = await fetch(url); const data = await res.json();
+                    return data.responseData.translatedText;
+                });
+                const resultados = await Promise.all(promessas);
+                txtTraduzido.value = resultados.join("");
+            } catch (erro) { console.error(erro); txtTraduzido.value = "Erro na conexão ou limite diário atingido."; }
+        }
+
+        function inverterIdiomas() {
+            [origemSel.value, destinoSel.value] = [destinoSel.value, origemSel.value];
+            traduzir();
+        }
+
+        function salvarTraducao() {
+            if (!txtOriginal.value || !txtTraduzido.value) return;
+            historicoTraducoes.unshift({ origem: txtOriginal.value, traducao: txtTraduzido.value });
+            saveAll();
+            renderTabelaTraducoes();
+        }
+
+        function excluirTraducao(index, e) {
+            e.stopPropagation();
+            historicoTraducoes.splice(index, 1);
+            saveAll();
+            renderTabelaTraducoes();
+        }
+
+        function renderTabelaTraducoes() {
+            const filtro = inputBusca.value.toLowerCase();
+            tabTraducoes.innerHTML = "";
+            historicoTraducoes
+                .filter(item => item.origem.toLowerCase().includes(filtro) || item.traducao.toLowerCase().includes(filtro))
+                .forEach((item, index) => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `<td>${item.origem.substring(0, 50)}${item.origem.length > 50 ? '...' : ''}</td>
+                                    <td>${item.traducao.substring(0, 50)}${item.traducao.length > 50 ? '...' : ''}</td>
+                                    <td onclick="excluirTraducao(${index}, event)">❌</td>`;
+                    tr.onclick = () => { txtOriginal.value = item.origem; txtTraduzido.value = item.traducao; };
+                    tabTraducoes.appendChild(tr);
+                });
+        }
+
+
+        // --- 5. FLASHCARDS (SRS) ---
+        let studyQueue = []; let currentCard = null;
+
+        function renderFlashcardsTab() { renderCardList(); prepareStudySession(); updateCardGoalStats(); }
+
+        function addFlashcard() {
+            const f = document.getElementById('newFront').value; const b = document.getElementById('newBack').value;
+            if(!f || !b) return alert("Preencha frente e verso");
+            flashcards.push({ id: Date.now(), front: f, back: b, level: 0, nextReview: getRawDateStr(new Date()) });
+            document.getElementById('newFront').value = ''; document.getElementById('newBack').value = '';
+            saveAll(); renderCardList(); prepareStudySession(); updateCardGoalStats();
+        }
+
+        function deleteFlashcard(id) {
+            if(confirm("Deletar cartão?")) { flashcards = flashcards.filter(c => c.id !== id); saveAll(); renderFlashcardsTab(); }
+        }
+
+        function renderCardList() {
+            const tbody = document.getElementById('flashcards-list');
+            const searchTerm = document.getElementById('searchFlashcard') ? document.getElementById('searchFlashcard').value.toLowerCase() : '';
+            tbody.innerHTML = '';
+            const filteredCards = flashcards.filter(c => c.front.toLowerCase().includes(searchTerm) || c.back.toLowerCase().includes(searchTerm));
+            filteredCards.forEach(c => { tbody.innerHTML += `<tr><td>${c.front}</td><td>${c.back}</td><td>${c.level}</td><td><button onclick="deleteFlashcard(${c.id})" style="color:red;border:none;background:none;cursor:pointer;">❌</button></td></tr>`; });
+        }
+
+        function prepareStudySession() {
+            const today = getRawDateStr(new Date());
+            studyQueue = flashcards.filter(c => c.nextReview <= today);
+            document.getElementById('srs-count').textContent = `Pendentes: ${studyQueue.length}`;
+            if(studyQueue.length > 0) { currentCard = studyQueue[0]; showCardFace(); } 
+            else { currentCard = null; document.getElementById('card-front').textContent = "Tudo em dia! 🎉"; document.getElementById('card-back').classList.remove('visible'); document.getElementById('btn-show-answer').style.display = 'none'; document.getElementById('srs-controls').classList.remove('visible'); }
+        }
+
+        function showCardFace() {
+            document.getElementById('card-front').textContent = currentCard.front; document.getElementById('card-back').textContent = currentCard.back;
+            document.getElementById('card-back').classList.remove('visible'); document.getElementById('btn-show-answer').style.display = 'inline-block'; document.getElementById('srs-controls').classList.remove('visible');
+        }
+
+        function showAnswer() { document.getElementById('card-back').classList.add('visible'); document.getElementById('btn-show-answer').style.display = 'none'; document.getElementById('srs-controls').classList.add('visible'); }
+
+        function rateCard(success) {
+            const intervals = [1, 3, 7, 14, 30, 60, 90];
+            if(success) { currentCard.level++; const daysToAdd = intervals[Math.min(currentCard.level, intervals.length)-1] || 90; const nextDate = new Date(); nextDate.setDate(nextDate.getDate() + daysToAdd); currentCard.nextReview = getRawDateStr(nextDate); } 
+            else { currentCard.level = 0; const nextDate = new Date(); nextDate.setDate(nextDate.getDate() + 1); currentCard.nextReview = getRawDateStr(nextDate); }
+            const idx = flashcards.findIndex(c => c.id === currentCard.id); flashcards[idx] = currentCard;
+            saveAll(); prepareStudySession();
+        }
+
+        function toggleImportCSV() {
+            const area = document.getElementById('csvImportArea');
+            area.style.display = area.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function processCSV() {
+            const txt = document.getElementById('csvInput').value;
+            if(!txt) return alert("Cole o texto CSV!");
+            const lines = txt.split('\n'); let addedCount = 0;
+            lines.forEach(line => {
+                if(line.includes(',')) {
+                    const parts = line.split(','); const f = parts[0].trim(); const b = parts.slice(1).join(',').trim(); 
+                    if(f && b) { flashcards.push({ id: Date.now() + Math.random(), front: f, back: b, level: 0, nextReview: getRawDateStr(new Date()) }); addedCount++; }
+                }
+            });
+            saveAll(); document.getElementById('csvInput').value = ''; toggleImportCSV(); renderCardList(); updateCardGoalStats(); alert(`${addedCount} cards importados com sucesso!`);
+        }
+
+        function updateCardGoalStats() {
+            const statsDiv = document.getElementById('card-goal-stats');
+            if(!configData.cardGoalEnabled) { statsDiv.style.display = 'none'; return; }
+            const activeCycle = getActiveCycle();
+            if(!activeCycle) { statsDiv.style.display = 'none'; return; }
+
+            statsDiv.style.display = 'flex';
+            const dailyGoal = parseInt(configData.cardGoalQty) || 0;
+            const studyDaysCount = activeCycle.studyDays.length;
+            const totalCycleGoal = dailyGoal * studyDaysCount * 12;
+
+            const startDate = new Date(activeCycle.startDate + 'T00:00:00'); const endDate = new Date(activeCycle.endDate + 'T23:59:59');
+            const addedInCycle = flashcards.filter(c => c.id >= startDate.getTime() && c.id <= endDate.getTime()).length;
+
+            const todayStr = getRawDateStr(new Date());
+            const addedToday = flashcards.filter(c => getRawDateStr(new Date(c.id)) === todayStr).length;
+            const pendingToday = Math.max(0, dailyGoal - addedToday);
+
+            let expectedTotalUntilYesterday = 0; let loopDate = new Date(startDate);
+            const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); yesterday.setHours(23, 59, 59, 999);
+            const cutoffDate = yesterday > endDate ? endDate : yesterday;
+
+            while(loopDate <= cutoffDate) {
+                if(activeCycle.studyDays.includes(loopDate.getDay())) { expectedTotalUntilYesterday += dailyGoal; }
+                loopDate.setDate(loopDate.getDate() + 1);
+            }
+
+            const addedUntilYesterday = flashcards.filter(c => {
+                const cDate = getRawDateStr(new Date(c.id));
+                return c.id >= startDate.getTime() && c.id <= endDate.getTime() && cDate !== todayStr;
+            }).length;
+
+            const backlog = Math.max(0, expectedTotalUntilYesterday - addedUntilYesterday);
+            const pendingTotal = backlog + pendingToday;
+            const percent = totalCycleGoal > 0 ? ((addedInCycle / totalCycleGoal) * 100).toFixed(1) : 0;
+
+            document.getElementById('cg-today').textContent = pendingToday; document.getElementById('cg-pending-total').textContent = pendingTotal;
+            document.getElementById('cg-added-cycle').textContent = addedInCycle; document.getElementById('cg-cycle-total').textContent = totalCycleGoal;
+            document.getElementById('cg-percent').textContent = percent + '%';
+        }
+
+        // --- 6. CICLOS ---
+        let cycleRadarChart = null;
+        function getActiveCycle() { return cyclesData.find(c => c.status === 'active'); }
+        
+        function startCycle() {
+            if(getActiveCycle()) return alert("Já existe um ciclo ativo.");
+            const today = new Date(); const endDate = new Date(today); endDate.setDate(today.getDate() + (12 * 7));
+            const currentLvl = configData.currentLevel; const pct = configData.levels[currentLvl];
+            const totalHours = configData.goal * configData.days.length * 12;
+            const targets = { ler: totalHours*(pct[0]/100), escutar: totalHours*(pct[1]/100), falar: totalHours*(pct[2]/100), escrever: totalHours*(pct[3]/100) };
+            
+            cyclesData.unshift({ id:Date.now(), startDate:getRawDateStr(today), endDate:getRawDateStr(endDate), level:currentLvl, targets:targets, studyDays:[...configData.days], status:'active' });
+            saveAll(); renderCyclesTab();
+        }
+        
+        function endCycle(id) { 
+            if(confirm("Finalizar o ciclo?")) { 
+                const c = cyclesData.find(x => x.id === id); 
+                if(c) { c.status = 'completed'; c.endDate = getRawDateStr(new Date()); saveAll(); renderCyclesTab(); }
+            } 
+        }
+        function deleteCycle(id) { if(confirm("Apagar?")){ cyclesData=cyclesData.filter(x=>x.id!==id); saveAll(); renderCyclesTab(); } }
+
+        function renderCyclesTab() {
+            const activeArea = document.getElementById('cycle-active-area');
+            const activeCycle = getActiveCycle();
+            if (!activeCycle) {
+                activeArea.innerHTML = `<div class="cycle-empty-state"><h3>Nenhum ciclo ativo</h3><button class="btn-cycle-start" onclick="startCycle()">🚀 Iniciar Novo Ciclo</button></div>`;
+            } else {
+                const today = new Date(); today.setHours(0,0,0,0);
+                const end = new Date(activeCycle.endDate + 'T00:00:00');
+                const diffTime = end - today;
+                const weeksRemaining = Math.ceil(Math.ceil(diffTime / (1000 * 60 * 60 * 24)) / 7);
+                const totalPlannedDays = 12 * activeCycle.studyDays.length; 
+                const cycleLogs = studyData.filter(d => d.rawDate >= activeCycle.startDate && d.rawDate <= activeCycle.endDate);
+                const uniqueDaysStudied = new Set(cycleLogs.map(d => d.rawDate)).size; 
+                const daysRemaining = Math.max(0, totalPlannedDays - uniqueDaysStudied); 
+                const progressPct = totalPlannedDays > 0 ? ((uniqueDaysStudied / totalPlannedDays) * 100).toFixed(1) : 0;
+
+                activeArea.innerHTML = `
+                    <div class="cycle-active-card">
+                        <div class="cycle-header"><div><span class="level-badge lvl-${activeCycle.level.toLowerCase()}">${activeCycle.level}</span> <b>Ciclo Ativo</b></div><div class="cycle-dates">${formatDateBR(activeCycle.startDate)} até ${formatDateBR(activeCycle.endDate)}</div></div>
+                        <div class="cycle-countdown">
+                            <div class="count-box"><span class="count-num">${Math.max(0, weeksRemaining)}</span><span class="count-lbl">Semanas Restantes</span></div>
+                            <div class="count-box"><span class="count-num">${uniqueDaysStudied}</span><span class="count-lbl">Dias Estudados</span></div>
+                            <div class="count-box"><span class="count-num">${daysRemaining}</span><span class="count-lbl">Dias Restantes</span></div>
+                            <div class="count-box"><span class="count-num">${progressPct}%</span><span class="count-lbl">Progresso</span></div>
+                        </div>
+                        <div class="chart-wrapper" style="position: relative; margin-bottom: 20px;">
+                            <div style="display: flex; justify-content: flex-end; align-items: center; margin-bottom: 10px;">
+                                <label style="font-size: 0.85rem; color: #555; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                                    <input type="checkbox" id="cycleMetaToggle" checked onchange="renderCycleRadar()" style="margin: 0;"> <span>Exibir Meta</span>
+                                </label>
+                            </div>
+                            <div style="height: 300px; width: 100%;"><canvas id="cycleRadarChart"></canvas></div>
+                        </div>
+                        <div class="cycle-actions"><button class="btn-save" style="background:#e67e22; width:auto;" onclick="endCycle(${activeCycle.id})">🏁 Finalizar Ciclo</button><button class="btn-save" style="background:#c0392b; width:auto;" onclick="deleteCycle(${activeCycle.id})">❌</button></div>
+                    </div>`;
+                setTimeout(() => renderCycleRadar(activeCycle), 100);
+            }
+            const tbody = document.getElementById('cyclesTableBody'); tbody.innerHTML = '';
+            cyclesData.forEach(c => {
+                const s = getCycleStats(c);
+                const mk = (r,t) => `<div class="progress-cell"><span class="progress-val">${(r/3600).toFixed(1)}h</span><span class="progress-meta">/ ${t.toFixed(1)}h</span></div>`;
+                tbody.innerHTML += `<tr><td>${formatDateBR(c.startDate)}<br>à ${formatDateBR(c.endDate)}</td><td><span class="level-badge lvl-${c.level.toLowerCase()}">${c.level}</span></td><td>${mk(s.ler,c.targets.ler)}</td><td>${mk(s.escutar,c.targets.escutar)}</td><td>${mk(s.falar,c.targets.falar)}</td><td>${mk(s.escrever,c.targets.escrever)}</td><td style="color:${c.status==='active'?'green':'grey'}">${c.status}</td></tr>`;
+            });
+        }
+        
+        function getCycleStats(c) {
+            const logs = studyData.filter(d => d.rawDate >= c.startDate && d.rawDate <= c.endDate);
+            let t = {ler:0, escutar:0, falar:0, escrever:0};
+            logs.forEach(i => (senseMap[i.activity]||[]).forEach(s=>t[s]+=i.duration));
+            return t;
+        }
+        
+        function renderCycleRadar(c=getActiveCycle()) {
+            if(!c)return; const ctx=document.getElementById('cycleRadarChart'); if(!ctx)return;
+            const s=getCycleStats(c); const meta=document.getElementById('cycleMetaToggle') ? document.getElementById('cycleMetaToggle').checked : true;
+            if(cycleRadarChart) cycleRadarChart.destroy();
+            cycleRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Ler','Escutar','Falar','Escrever'],
+                    datasets: [
+                        { label:'Real (h)', data:[s.ler/3600, s.escutar/3600, s.falar/3600, s.escrever/3600], backgroundColor:'rgba(39,174,96,0.2)', borderColor:'#27ae60', borderWidth:2 },
+                        ...(meta?[{ label:'Meta (h)', data:[c.targets.ler, c.targets.escutar, c.targets.falar, c.targets.escrever], backgroundColor:'rgba(231,76,60,0.1)', borderColor:'#e74c3c', borderWidth:1, borderDash:[5,5] }]:[])
+                    ]
+                }, options: { responsive:true, maintainAspectRatio:false }
+            });
+        }
+
+        // --- 7. CRONÔMETRO & MANUAIS ---
+        let timerInterval, seconds = 0, isRunning = false, editingId = null;
+        const timerDisplay = document.getElementById('timer');
+        document.getElementById('manualDate').value = getRawDateStr(new Date());
+
+        function startTimer() { if(!isRunning){ isRunning=true; timerInterval=setInterval(()=>{seconds++;timerDisplay.textContent=formatTimeInfo(seconds)},1000); toggleCtrls(true); }}
+        function pauseTimer() { if(isRunning){ clearInterval(timerInterval); isRunning=false; toggleCtrls(false, true); }}
+        function stopTimer() { if(seconds===0)return; clearInterval(timerInterval); isRunning=false; saveStudy(document.getElementById('timerActivity').value, seconds, new Date()); seconds=0; timerDisplay.textContent="00:00:00"; toggleCtrls(false); renderLists(); }
+        
+        function toggleCtrls(active, paused=false) {
+            document.getElementById('btnStart').disabled = active; document.getElementById('btnStart').textContent = paused?"Retomar":"Iniciar";
+            document.getElementById('btnPause').disabled = !active; document.getElementById('btnStop').disabled = !active; document.getElementById('timerActivity').disabled = active;
+        }
+        
+        function saveStudy(act, dur, dateObj, id=null) {
+            const raw = getRawDateStr(dateObj);
+            const obj = { id: id||Date.now(), activity:act, duration:dur, rawDate:raw, displayDate:dateObj.toLocaleDateString('pt-BR') };
+            if(id) { const idx = studyData.findIndex(i=>i.id===id); if(idx!==-1) studyData[idx] = obj; }
+            else studyData.push(obj);
+            studyData.sort((a,b)=>b.id-a.id); saveAll();
+        }
+        
+        function handleManualSave() {
+            const d = document.getElementById('manualDate').value; const act = document.getElementById('manualActivity').value;
+            const h = +document.getElementById('manualHours').value; const m = +document.getElementById('manualMinutes').value;
+            if(!d || (h===0 && m===0)) return alert("Dados inválidos");
+            saveStudy(act, (h*3600)+(m*60), new Date(d+'T00:00:00'), editingId); cancelEdit(); renderLists();
+        }
+        
+        function editEntry(id) {
+            const item = studyData.find(d=>d.id===id); if(!item)return;
+            switchTab('manual'); document.getElementById('manualDate').value = item.rawDate; document.getElementById('manualActivity').value = item.activity;
+            document.getElementById('manualHours').value = Math.floor(item.duration/3600); document.getElementById('manualMinutes').value = Math.floor((item.duration%3600)/60);
+            editingId = id; document.getElementById('btnManualSave').textContent = "Salvar Alteração"; document.getElementById('btnManualSave').style.background = "#f39c12"; document.getElementById('btnCancelEdit').style.display = 'block';
+        }
+        
+        function cancelEdit(){ editingId=null; document.getElementById('manualHours').value=0; document.getElementById('manualMinutes').value=0; document.getElementById('btnManualSave').textContent="Adicionar Registro"; document.getElementById('btnManualSave').style.background="#3498db"; document.getElementById('btnCancelEdit').style.display='none'; }
+        function deleteSession(id) { if(confirm("Apagar?")){ studyData=studyData.filter(i=>i.id!==id); saveAll(); renderLists(); } }
+
+        function renderLists() {
+            const tList = document.getElementById('timer-list'), mList = document.getElementById('manual-list');
+            const today = getRawDateStr(new Date()), mDate = document.getElementById('manualDate').value;
+            renderUL(tList, studyData.filter(d=>d.rawDate===today)); 
+            renderUL(mList, studyData.filter(d=>d.rawDate===mDate));
+            updateDailyStats(); // Hoje (Timer)
+            updateDailyStats(mDate); // Data Selecionada (Manual)
+        }
+        
+        function renderUL(ul, arr) {
+            ul.innerHTML = arr.length ? '' : '<li style="text-align:center;color:#999;padding:10px">Vazio</li>';
+            arr.forEach(i => ul.innerHTML += `<li class="history-item"><div class="history-info"><strong>${i.activity}</strong><span class="history-date">${i.displayDate}</span></div><div><span style="font-weight:bold">${formatTimeInfo(i.duration)}</span><button class="action-btn" onclick="editEntry(${i.id})">✏️</button><button class="action-btn" onclick="deleteSession(${i.id})" style="color:red">❌</button></div></li>`);
+        }
+        document.getElementById('manualDate').addEventListener('change', renderLists);
+
+        // --- 8. DASHBOARD ---
+        function toggleCustomDate() { document.getElementById('customDates').style.display = document.getElementById('filterRange').value==='custom'?'block':'none'; }
+        let chartRadar=null, chartBar=null;
+        
+        function applyFilter() {
+            const r = document.getElementById('filterRange').value; const today = new Date(); let data = [];
+            if(r==='all') data=studyData;
+            else if(r==='today') data=studyData.filter(d=>d.rawDate===getRawDateStr(today));
+            else if(r==='yesterday') { const y=new Date(); y.setDate(y.getDate()-1); data=studyData.filter(d=>d.rawDate===getRawDateStr(y)); }
+            else if(r==='week') {
+                const day = today.getDay(); const diff = today.getDate() - day; 
+                const start = new Date(today); start.setDate(diff); const end = new Date(today); end.setDate(diff+6);
+                data = studyData.filter(d => d.rawDate >= getRawDateStr(start) && d.rawDate <= getRawDateStr(end));
+            } else { const s=document.getElementById('dateStart').value, e=document.getElementById('dateEnd').value; if(s&&e) data=studyData.filter(d=>d.rawDate>=s && d.rawDate<=e); }
+            updateDashboard(data);
+        }
+        
+        function updateDashboard(data) {
+            let totals={ler:0, escutar:0, falar:0, escrever:0}, actTotals={};
+            data.forEach(i => { (senseMap[i.activity]||[]).forEach(s=>totals[s]+=i.duration); actTotals[i.activity]=(actTotals[i.activity]||0)+i.duration; });
+            ['ler','escutar','falar','escrever'].forEach(k => document.getElementById(`time-${k}`).textContent = formatHM(totals[k]));
+            if(chartRadar) chartRadar.destroy();
+            chartRadar = new Chart(document.getElementById('radarChart'), { type: 'radar', data: { labels: ['Ler','Escutar','Falar','Escrever'], datasets: [{ label:'Horas', data:[totals.ler/3600, totals.escutar/3600, totals.falar/3600, totals.escrever/3600], backgroundColor:'rgba(52, 152, 219, 0.2)', borderColor:'#3498db', borderWidth:2 }] }, options: { responsive:true, maintainAspectRatio:false } });
+            const sorted = Object.entries(actTotals).sort((a,b)=>b[1]-a[1]);
+            if(chartBar) chartBar.destroy();
+            chartBar = new Chart(document.getElementById('barActivityChart'), { type: 'bar', data: { labels: sorted.map(x=>x[0]), datasets: [{ label:'Horas', data: sorted.map(x=>x[1]/3600), backgroundColor:'#27ae60', borderRadius:5 }] }, options: { indexAxis:'y', responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}} } });
+        }
+
+        // --- 9. CONFIG UI ---
+        function initConfigUI() {
+            document.getElementById('dailyGoal').value = configData.goal; document.getElementById('currentLevel').value = configData.currentLevel;
+            document.getElementById('checkCardGoal').checked = configData.cardGoalEnabled || false;
+            document.getElementById('inputCardGoal').value = configData.cardGoalQty || 0;
+            toggleCardGoalInput();
+            document.querySelectorAll('.day-circle').forEach((c, idx) => c.classList.toggle('selected', configData.days.includes(idx)));
+            renderLevelTables();
+        }
+        function toggleCardGoalInput() {
+            const chk = document.getElementById('checkCardGoal').checked;
+            document.getElementById('divCardGoalInput').style.display = chk ? 'block' : 'none';
+        }
+        function saveConfigAndRecalc() {
+            configData.goal = parseFloat(document.getElementById('dailyGoal').value) || 0;
+            configData.currentLevel = document.getElementById('currentLevel').value;
+            configData.cardGoalEnabled = document.getElementById('checkCardGoal').checked;
+            configData.cardGoalQty = parseInt(document.getElementById('inputCardGoal').value) || 0;
+            saveAll(); renderLevelTables();
+        }
+        function toggleDay(el, idx) {
+            if(configData.days.includes(idx)) configData.days = configData.days.filter(d=>d!==idx); else configData.days.push(idx);
+            el.classList.toggle('selected'); saveConfigAndRecalc();
+        }
+        function updateLevel(lvl, col, val) { configData.levels[lvl][col] = Number(val); saveConfigAndRecalc(); }
+        function renderLevelTables() {
+            const tbodyPct = document.getElementById('levelTableBody'), tbodyHrs = document.getElementById('hoursTableBody');
+            tbodyPct.innerHTML = ''; tbodyHrs.innerHTML = '';
+            const totalCycle = configData.goal * configData.days.length * 12;
+            levelsOrder.forEach(lvl => {
+                const isCurrent = lvl === configData.currentLevel; const vals = configData.levels[lvl]; const total = vals.reduce((a,b)=>a+b,0);
+                const rowClass = isCurrent ? 'class="current-level-row"' : '';
+                tbodyPct.innerHTML += `<tr ${rowClass}><td><span class="level-badge lvl-${lvl.toLowerCase()}">${lvl}</span></td>
+                    <td><input type="number" value="${vals[0]}" onchange="updateLevel('${lvl}',0,this.value)"></td>
+                    <td><input type="number" value="${vals[1]}" onchange="updateLevel('${lvl}',1,this.value)"></td>
+                    <td><input type="number" value="${vals[2]}" onchange="updateLevel('${lvl}',2,this.value)"></td>
+                    <td><input type="number" value="${vals[3]}" onchange="updateLevel('${lvl}',3,this.value)"></td>
+                    <td style="font-weight:bold; color:${total===100?'green':'red'}">${total}%</td></tr>`;
+                tbodyHrs.innerHTML += `<tr ${rowClass}><td><span class="level-badge lvl-${lvl.toLowerCase()}">${lvl}</span></td>
+                    <td>${(totalCycle*(vals[0]/100)).toFixed(1)}h</td><td>${(totalCycle*(vals[1]/100)).toFixed(1)}h</td>
+                    <td>${(totalCycle*(vals[2]/100)).toFixed(1)}h</td><td>${(totalCycle*(vals[3]/100)).toFixed(1)}h</td></tr>`;
+            });
+        }
+
+        // --- 10. NAVEGAÇÃO LATERAL ---
+        function switchTab(t) {
+            document.querySelectorAll('.tab-content').forEach(e => e.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+            document.getElementById('tab-' + t).classList.add('active');
+            
+            const btnIndexMap = {'timer':0, 'manual':1, 'tradutor':2,'srs':3, 'cycles':4, 'stats':5,'aulas':6, 'config':7, 'about':8};
+            const btns = document.querySelectorAll('.nav-btn');
+            if(btns[btnIndexMap[t]]) btns[btnIndexMap[t]].classList.add('active');
+
+            if(t==='cycles') renderCyclesTab(); 
+            else if(t==='stats') applyFilter(); 
+            else if(t==='srs') renderFlashcardsTab();
+        }
+
+        // --- CONTROLE DE ACESSO NETLIFY IDENTITY E INÍCIO DO APP ---
+        if (window.netlifyIdentity) {
+            
+            // Inicia fluxo de autenticação ao carregar a página
+            netlifyIdentity.on("init", user => {
+                if (!user) {
+                    // Sem usuário = Mostra tela de login
+                    document.getElementById('login-screen').style.display = 'flex';
+                    document.getElementById('app-content').style.display = 'none';
+                } else {
+                    // Tem usuário em sessão = Entra direto no app
+                    iniciarAppComUsuario(user);
                 }
             });
 
-            // Atualiza Barra de Aula 01 (Exemplo com 2 atividades)
-            const idsAula1 = ['a1_at1', 'a1_at2'];
-            const feitasAula1 = idsAula1.filter(id => concluidas.includes(id)).length;
-            const porcAula1 = Math.round((feitasAula1 / idsAula1.length) * 100);
+            // Ao fazer login pela janela popup
+            netlifyIdentity.on("login", user => {
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                iniciarAppComUsuario(user);
+            });
 
-            document.getElementById('bar-aula1').style.width = porcAula1 + '%';
-            document.getElementById('perc-aula1').textContent = porcAula1 + '%';
+            // Recarrega a tela ao deslogar para travar o app e mostrar tela de entrada
+            netlifyIdentity.on("logout", () => {
+                document.location.reload();
+            });
         }
 
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById('tab-' + tabId).classList.add('active');
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
-            event.currentTarget.classList.add('active-nav');
-        }
+        // FUNÇÃO QUE EXECUTA ASSIM QUE O LOGIN É CONFIRMADO
+        async function iniciarAppComUsuario(user) {
+            globalUserId = user.id;
 
-        // Simulação da função saveStudy caso não esteja no escopo
-        if (typeof saveStudy === "undefined") {
-            window.saveStudy = async function(activity, seconds, date) {
-                console.log(`Salvando ${seconds}s de ${activity}`);
-                // Aqui entraria sua lógica original de salvar o array 'estudos'
+            const userData = {
+                id: user.id,
+                email: user.email,
+                name: user.user_metadata?.full_name || "Sem nome"
             };
+
+            // Salva apenas os dados básicos de usuário (merge não afeta os arrays de estudo existentes lá)
+            try {
+                if(window.firebase) {
+                    await window.firebase.setDoc(window.firebase.doc(window.firebase.db, "usuarios", globalUserId), userData, { merge: true });
+                }
+            } catch (e) {
+                console.error("Erro ao salvar perfil inicial:", e);
+            }
+
+            // Puxa toda as informações que estão salvas no firebase
+            await loadData();
         }
+
     </script>
 </body>
 </html>
