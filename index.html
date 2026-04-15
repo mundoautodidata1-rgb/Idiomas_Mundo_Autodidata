@@ -209,6 +209,39 @@
 
 
 
+.aula-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f1f1f1;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 8px;
+    margin-top: 10px;
+}
+
+.aula-conteudo {
+    display: none;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.progresso-container {
+    width: 60%;
+    height: 8px;
+    background: #ddd;
+    border-radius: 5px;
+}
+
+.progresso-barra {
+    height: 100%;
+    width: 0%;
+    background: green;
+    border-radius: 5px;
+}
+
+
         /* SOBRE */
         .about-centered { text-align: center; margin-top: 40px; padding: 20px; border-top: 1px dashed #eee; }
         .about-img { max-width: 400px; height: auto; margin: 20px auto; display: block; }
@@ -557,62 +590,54 @@
                          <div class="about-txt-bottom">© 2026 App - Mundo Autodidata - Todos os direitos reservados.</div>                   
                     </div>	
                 </div>
+
+
 <div id="tab-aulas" class="tab-content">
 
     <h2>Aulas</h2>
-    <h3>Mural com todos os conteúdos do Mundo Autodidata.</h3>
 
     <!-- ================= AULA 01 ================= -->
 
-    <div class="aula-box" style="border:1px solid #ddd; padding:15px; border-radius:10px; margin-bottom:20px;">
-        
-        <h2>Aula 01</h2>
+    <div class="aula">
 
-        <!-- PROGRESSO (visual inicial) -->
-        <div style="background:#eee; height:10px; border-radius:5px; margin-bottom:15px;">
-            <div id="progresso-aula01" style="width:0%; height:100%; background:#27ae60; border-radius:5px;"></div>
+        <!-- HEADER (CLICÁVEL) -->
+        <div class="aula-header" onclick="toggleAula('aula01')">
+            <span>Aula 01</span>
+
+            <div class="progresso-container">
+                <div class="progresso-barra" id="barra-aula01"></div>
+            </div>
+
+            <span id="percentual-aula01">0%</span>
         </div>
 
-        <!-- ================= CONTEÚDO ORIGINAL ================= -->
+        <!-- CONTEÚDO -->
+        <div id="conteudo-aula01" class="aula-conteudo">
 
-        <h3>Espanhol</h3>
+            <h3>Espanhol</h3>
 
-        <iframe width="768" height="432"
-            src="https://miro.com/app/live-embed/uXjVJcBYmT8=/?embedMode=view_only_without_ui"
-            frameborder="0" allowfullscreen>
-        </iframe>
+            <!-- ATIVIDADE 1 -->
+            <div class="aula-quick-save">
+                <input type="time" class="aula-time-input" value="00:10:00">
+                <button onclick="salvarAtividadeAula(this,'aula01','atv1')">
+                    Salvar
+                </button>
+            </div>
 
-        <iframe width="560" height="315"
-            src="https://www.youtube-nocookie.com/embed/6FSDHLAXAH0"
-            frameborder="0" allowfullscreen>
-        </iframe>
+            <!-- ATIVIDADE 2 -->
+            <div class="aula-quick-save">
+                <input type="time" class="aula-time-input" value="00:10:00">
+                <button onclick="salvarAtividadeAula(this,'aula01','atv2')">
+                    Salvar
+                </button>
+            </div>
 
-        <!-- ================= ATIVIDADE ================= -->
-
-        <div class="aula-quick-save" style="margin-top:20px;">
-            
-            <select class="aula-activity-select">
-                <option value="Ler">1-Ler</option>
-                <option value="Ler/Escutar">2-Ler & Escutar</option>
-                <option value="Ler/Falar" selected>3-Ler & Falar</option>
-                <option value="Escutar">4-Escutar</option>
-                <option value="Ler/Escutar/Falar">5-Ler, Escutar & Falar</option>
-                <option value="Escutar/Falar">6-Escutar & Falar</option>
-                <option value="Escrever">7-Escrever</option>
-                <option value="Conversar">8-Conversar</option>
-                <option value="Ensinar">10-Ensinar</option>
-            </select>
-            
-            <input type="time" step="1" class="aula-time-input" value="00:10:00">
-            
-            <button class="aula-save-btn" onclick="salvarAulaComProgresso(this, 'aula01')">
-                Salvar
-            </button>
         </div>
 
     </div>
 
 </div>
+
 
             </div> 
         </div> 
@@ -1176,6 +1201,85 @@ function salvarAulaRapido(btn) {
         btn.style.backgroundColor = "#3498db"; // Retorna ao Azul
     }, 2000);
 }
+
+
+function toggleAula(aulaId) {
+    const el = document.getElementById("conteudo-" + aulaId);
+
+    if (el.style.display === "block") {
+        el.style.display = "none";
+    } else {
+        el.style.display = "block";
+    }
+}
+
+function salvarAtividadeAula(btn, aulaId, atividadeId) {
+
+    // impede salvar de novo
+    const chave = aulaId + "_" + atividadeId;
+
+    if (localStorage.getItem(chave)) return;
+
+    // mantém seu sistema original
+    salvarAulaRapido(btn);
+
+    // marca como salvo
+    localStorage.setItem(chave, "true");
+
+    btn.innerText = "Salvo";
+    btn.disabled = true;
+
+    atualizarProgressoAula(aulaId);
+}
+
+function atualizarProgressoAula(aulaId) {
+
+    const aula = document.getElementById("conteudo-" + aulaId);
+    const botoes = aula.querySelectorAll("button");
+
+    const total = botoes.length;
+
+    let concluidos = 0;
+
+    botoes.forEach((btn, index) => {
+        const chave = aulaId + "_atv" + (index + 1);
+        if (localStorage.getItem(chave)) {
+            concluidos++;
+        }
+    });
+
+    const porcentagem = Math.round((concluidos / total) * 100);
+
+    document.getElementById("barra-" + aulaId).style.width = porcentagem + "%";
+    document.getElementById("percentual-" + aulaId).innerText = porcentagem + "%";
+}
+
+function carregarAulas() {
+
+    const aulas = document.querySelectorAll(".aula");
+
+    aulas.forEach((aulaEl) => {
+
+        const aulaId = aulaEl.querySelector(".aula-header span").innerText.toLowerCase().replace(" ", "");
+
+        const botoes = aulaEl.querySelectorAll("button");
+
+        botoes.forEach((btn, index) => {
+
+            const chave = aulaId + "_atv" + (index + 1);
+
+            if (localStorage.getItem(chave)) {
+                btn.innerText = "Salvo";
+                btn.disabled = true;
+            }
+        });
+
+        atualizarProgressoAula(aulaId);
+    });
+}
+
+carregarAulas();
+
 
 
 
